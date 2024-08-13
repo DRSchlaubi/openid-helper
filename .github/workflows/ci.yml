@@ -27,7 +27,7 @@ jobs:
           java-version: '22'
           native-image-musl: true
       - uses: gradle/actions/setup-gradle@v3
-      - run: ./gradlew installDist
+      - run: ./gradlew nativeBuild
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v3
       - name: Log into registry ${{ env.REGISTRY }}
