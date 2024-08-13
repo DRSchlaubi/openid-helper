@@ -1,0 +1,38 @@
+[
+  {
+    "name": "dev.schlaubi.openid.helper.models.OpenIDManifest",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "dev.schlaubi.openid.helper.models.OpenIDManifest$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [
+        ]
+      }
+    ]
+  },
+  {
+    "name": "kotlinx.serialization.json.JsonObject",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "kotlinx.serialization.json.JsonObject$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [
+        ]
+      }
+    ]
+  }
+]
