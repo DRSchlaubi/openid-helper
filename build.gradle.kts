@@ -9,7 +9,7 @@ graalvmNative {
     binaries {
             named("main") {
                 javaLauncher = javaToolchains.launcherFor {
-                    vendor = JvmVendorSpec.matching("graalvm")
+                    vendor = JvmVendorSpec.GRAAL_VM
                     languageVersion = JavaLanguageVersion.of(22)
                 }
                 imageName = "openid-helper"

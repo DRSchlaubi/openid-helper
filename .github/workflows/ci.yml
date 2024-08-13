@@ -25,6 +25,7 @@ jobs:
       - uses: graalvm/setup-graalvm@v1
         with:
           java-version: '22'
+          distribution: 'graalvm-community'
           native-image-musl: true
       - uses: gradle/actions/setup-gradle@v3
       - run: ./gradlew nativeBuild
