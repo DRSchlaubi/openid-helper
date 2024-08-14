@@ -6,6 +6,7 @@ import dev.schlaubi.openid.helper.providers.implementations.eBay
 import dev.schlaubi.openid.helper.providers.implementations.epicGames
 import dev.schlaubi.openid.helper.providers.implementations.fitbit
 import dev.schlaubi.openid.helper.providers.implementations.imgur
+import dev.schlaubi.openid.helper.providers.implementations.strava
 import dev.schlaubi.openid.helper.providers.implementations.tumblr
 import dev.schlaubi.openid.helper.providers.implementations.wordpressCom
 import kotlin.contracts.ExperimentalContracts
@@ -23,6 +24,7 @@ val providers = buildMap<String, Provider> {
     tumblr()
     digitalOcean()
     imgur()
+    strava()
 }
 
 @OptIn(ExperimentalContracts::class)
