@@ -21,8 +21,9 @@ fun ProviderRegistry.fitbit() = registerProvider("fitbit") {
 
         response {
             json {
-                val sub = it["user"]!!.jsonObject["encodedId"]!!
-                put("sub", sub)
+                val user = it["user"]!!.jsonObject
+                put("sub", user["encodedId"]!!)
+                put("preferred_username", user["displayName"]!!)
             }
         }
     }

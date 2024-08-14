@@ -29,6 +29,7 @@ fun ProviderRegistry.digitalOcean() = registerProvider("digital-ocean") {
             json {
                 val account = it["account"]!!.jsonObject
                 put("sub", account["uuid"]!!)
+                put("email", account["email"]!!)
             }
         }
     }

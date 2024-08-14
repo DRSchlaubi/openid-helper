@@ -17,6 +17,7 @@ fun ProviderRegistry.traewelling() = registerProvider("traewelling") {
             json {
                 val data = it["data"]!!.jsonObject
                 put("sub", data["id"]!!)
+                put("preferred_username", data["username"]!!)
             }
         }
     }

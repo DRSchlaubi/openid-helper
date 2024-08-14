@@ -32,6 +32,8 @@ fun ProviderRegistry.figma() = registerProvider("figma") {
         response {
             json {
                 put("sub", it["id"]!!)
+                put("email", it["email"]!!)
+                put("preferred_username", it["handle"]!!)
             }
         }
     }

@@ -18,6 +18,7 @@ fun ProviderRegistry.imgur() = registerProvider("imgur") {
             json {
                 val data = it["data"]!!.jsonObject
                 put("sub", data["id"]!!)
+                put("preferred_username", data["url"]!!)
             }
         }
     }

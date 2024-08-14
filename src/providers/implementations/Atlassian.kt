@@ -15,6 +15,8 @@ fun ProviderRegistry.atlassian() = registerProvider("atlassian") {
         response {
             json {
                 put("sub", it["account_id"]!!)
+                put("email", it["email"]!!)
+                put("nickname", it["nickname"]!!)
             }
         }
     }

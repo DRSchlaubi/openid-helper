@@ -26,6 +26,7 @@ fun ProviderRegistry.eBay() = registerProvider("ebay") {
         response {
             json {
                 put("sub", it["userId"]!!)
+                put("preferred_username", it["username"]!!)
             }
         }
     }
