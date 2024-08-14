@@ -2,9 +2,7 @@ package dev.schlaubi.openid.helper.providers.implementations
 
 import dev.schlaubi.openid.helper.providers.ProviderRegistry
 import dev.schlaubi.openid.helper.providers.registerProvider
-import io.ktor.client.request.bearerAuth
-import io.ktor.http.auth.HttpAuthHeader
-import io.ktor.server.auth.parseAuthorizationHeader
+import dev.schlaubi.openid.helper.util.fixLowercaseBearer
 import kotlinx.serialization.json.jsonObject
 
 fun ProviderRegistry.imgur() = registerProvider("imgur") {
@@ -13,9 +11,7 @@ fun ProviderRegistry.imgur() = registerProvider("imgur") {
     userEndpoint {
         request {
             url("https://api.imgur.com/3/account/me")
-            json({ _, call ->
-                bearerAuth((call.request.parseAuthorizationHeader() as HttpAuthHeader.Single).blob)
-            }) {}
+            fixLowercaseBearer()
         }
 
         response {

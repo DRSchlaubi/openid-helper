@@ -5,10 +5,13 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.Parameters
 import io.ktor.http.ParametersBuilder
 import io.ktor.http.URLBuilder
 import io.ktor.http.content.OutgoingContent
+import io.ktor.http.contentType
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receive
 import io.ktor.server.request.receiveChannel
@@ -16,6 +19,7 @@ import io.ktor.server.request.receiveParameters
 import io.ktor.util.reflect.TypeInfo
 import io.ktor.util.reflect.typeInfo
 import io.ktor.utils.io.ByteReadChannel
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.buildJsonObject
@@ -105,7 +109,15 @@ data class Provider(
     ) : Interceptor<JsonObject> {
         override val typeInfo: TypeInfo = typeInfo<JsonObject>()
         override suspend fun ApplicationCall.receiveBody(): JsonObject = receive()
-        override suspend fun HttpResponse.receiveBody(): JsonObject = body()
+        override suspend fun HttpResponse.receiveBody(): JsonObject {
+            val contentType = contentType()
+            return if (contentType == ContentType.Application.Json) {
+                body()
+            } else {
+                Json.decodeFromString(bodyAsText())
+            }
+        }
+
         override suspend fun JsonObject.toResult(): Any {
             val elements = buildJsonObject {
                 block(this@toResult)
