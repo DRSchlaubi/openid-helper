@@ -3,7 +3,7 @@ package dev.schlaubi.openid.helper.providers.implementations
 import dev.schlaubi.openid.helper.Config
 import dev.schlaubi.openid.helper.providers.ProviderRegistry
 import dev.schlaubi.openid.helper.providers.registerProvider
-import io.ktor.client.request.basicAuth
+import dev.schlaubi.openid.helper.util.useHeaderForOAuthClientCredentials
 
 fun ProviderRegistry.epicGames() = registerProvider("epic-games") {
     jwksEndpoint = "https://api.epicgames.dev/epic/oauth/v2/.well-known/jwks.json"
@@ -14,9 +14,7 @@ fun ProviderRegistry.epicGames() = registerProvider("epic-games") {
         request {
             url("https://api.epicgames.dev/epic/oauth/v2/token")
 
-            formBody({form, _->
-                basicAuth(form["client_id"]!!, form["client_secret"]!!)
-            }) {
+            useHeaderForOAuthClientCredentials {
                 append("deployment_id", Config.EPIC_DEPLOYMENT_ID)
             }
         }

@@ -16,11 +16,9 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentLength
 import io.ktor.http.contentType
-import io.ktor.http.headers
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.application.install
 import io.ktor.server.resources.get
 import io.ktor.server.resources.handle
 import io.ktor.server.resources.resource
@@ -31,7 +29,6 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.method
 import io.ktor.server.util.url
 import io.ktor.util.filter
-import io.ktor.utils.io.printStack
 
 val LOG = KotlinLogging.logger { }
 val PROXY_HEADERS = listOf(HttpHeaders.Host)
@@ -97,11 +94,7 @@ inline fun <reified R : HasProvider> Route.proxyRoute(
             call.response.status(response.status)
             call.response.header(HttpHeaders.ContentType, response.contentType().toString())
             if (interceptor.response.typeInfo != null) {
-                try {
-                    call.respond(body, interceptor.response.typeInfo!!)
-                } catch (e: Throwable) {
-                    e.printStack()
-                }
+                call.respond(body, interceptor.response.typeInfo!!)
             } else {
                 call.response.header(HttpHeaders.ContentLength, response.contentLength().toString())
                 call.respond(body)
