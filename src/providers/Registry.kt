@@ -1,6 +1,7 @@
 package dev.schlaubi.openid.helper.providers
 
 import dev.schlaubi.openid.helper.providers.implementations.amazon
+import dev.schlaubi.openid.helper.providers.implementations.digitalOcean
 import dev.schlaubi.openid.helper.providers.implementations.eBay
 import dev.schlaubi.openid.helper.providers.implementations.epicGames
 import dev.schlaubi.openid.helper.providers.implementations.fitbit
@@ -19,6 +20,7 @@ val providers = buildMap<String, Provider> {
     fitbit()
     wordpressCom()
     tumblr()
+    digitalOcean()
 }
 
 @OptIn(ExperimentalContracts::class)
