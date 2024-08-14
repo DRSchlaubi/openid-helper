@@ -4,6 +4,7 @@ import dev.schlaubi.openid.helper.providers.implementations.amazon
 import dev.schlaubi.openid.helper.providers.implementations.digitalOcean
 import dev.schlaubi.openid.helper.providers.implementations.eBay
 import dev.schlaubi.openid.helper.providers.implementations.epicGames
+import dev.schlaubi.openid.helper.providers.implementations.figma
 import dev.schlaubi.openid.helper.providers.implementations.fitbit
 import dev.schlaubi.openid.helper.providers.implementations.imgur
 import dev.schlaubi.openid.helper.providers.implementations.strava
@@ -25,6 +26,7 @@ val providers = buildMap<String, Provider> {
     digitalOcean()
     imgur()
     strava()
+    figma()
 }
 
 @OptIn(ExperimentalContracts::class)
