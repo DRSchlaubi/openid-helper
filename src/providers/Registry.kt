@@ -9,6 +9,7 @@ import dev.schlaubi.openid.helper.providers.implementations.figma
 import dev.schlaubi.openid.helper.providers.implementations.fitbit
 import dev.schlaubi.openid.helper.providers.implementations.imgur
 import dev.schlaubi.openid.helper.providers.implementations.strava
+import dev.schlaubi.openid.helper.providers.implementations.traewelling
 import dev.schlaubi.openid.helper.providers.implementations.tumblr
 import dev.schlaubi.openid.helper.providers.implementations.wordpressCom
 import kotlin.contracts.ExperimentalContracts
@@ -29,6 +30,7 @@ val providers = buildMap<String, Provider> {
     strava()
     figma()
     atlassian()
+    traewelling()
 }
 
 @OptIn(ExperimentalContracts::class)
