@@ -34,5 +34,15 @@
         ]
       }
     ]
+  },
+  {
+    "name": "dev.schlaubi.openid.helper.providers.implementations.mastodon.MastodonOAuthApplication$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [
+        ]
+      }
+    ]
   }
 ]

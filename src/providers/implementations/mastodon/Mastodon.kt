@@ -1,5 +1,6 @@
 package dev.schlaubi.openid.helper.providers.implementations.mastodon
 
+import dev.schlaubi.openid.helper.Config
 import dev.schlaubi.openid.helper.Mastodon
 import dev.schlaubi.openid.helper.buildUrl
 import dev.schlaubi.openid.helper.providers.ProviderRegistry
@@ -12,6 +13,7 @@ import io.ktor.http.encodedPath
 import io.ktor.http.path
 import io.ktor.http.takeFrom
 import io.ktor.server.application.ApplicationCall
+import io.ktor.server.auth.UnauthorizedResponse
 import io.ktor.server.auth.parseAuthorizationHeader
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.resources.href
@@ -26,6 +28,8 @@ fun ProviderRegistry.mastodon() = registerProvider("mastodon") {
         val state = it.parameters["state"]!!
         val responseType = it.parameters["response_type"]!!
 
+        if (clientId != Config.MASTODON_CLIENT_ID) throw BadRequestException("Invalid client id")
+
         it.application.href(
             Mastodon.SelectHost(
                 clientId, scope, redirectUri, state, responseType
@@ -36,6 +40,7 @@ fun ProviderRegistry.mastodon() = registerProvider("mastodon") {
     token {
         request {
             formBody { (parameters, _, response) ->
+                if (get("client_secret") != Config.MASTODON_CLIENT_SECRET) throw BadRequestException("Ooops")
                 response.url.takeFrom(verifyToken(parameters["code"]!!).url)
                 response.url.path("oauth", "token")
                 response.contentType(ContentType.Application.FormUrlEncoded)

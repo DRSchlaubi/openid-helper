@@ -25,6 +25,8 @@ object Config : EnvironmentConfig() {
     val AMAZON_REGION by getEnv(AmazonRegion.EUROPE, ::enumValueOf)
     val JWT_SECRET by getEnv("verrysecurenonsense")
     val MASTODON_NAME by getEnv("OpenID Helper")
+    val MASTODON_CLIENT_ID by getEnv("appleistdoof")
+    val MASTODON_CLIENT_SECRET by getEnv("werdasliestkannlesen")
 }
 
 @OptIn(ExperimentalContracts::class)
