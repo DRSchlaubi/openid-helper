@@ -13,7 +13,6 @@ import io.ktor.http.encodedPath
 import io.ktor.http.path
 import io.ktor.http.takeFrom
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.UnauthorizedResponse
 import io.ktor.server.auth.parseAuthorizationHeader
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.resources.href
@@ -30,6 +29,7 @@ fun ProviderRegistry.mastodon() = registerProvider("mastodon") {
 
         if (clientId != Config.MASTODON_CLIENT_ID) throw BadRequestException("Invalid client id")
 
+        clear()
         it.application.href(
             Mastodon.SelectHost(
                 clientId, scope, redirectUri, state, responseType
