@@ -13,8 +13,8 @@ fun ProviderRegistry.digitalOcean() = registerProvider("digital-ocean") {
         }
 
         response {
-            json {
-                it.forEach(::put)
+            json {(data) ->
+                data.forEach(::put)
                 put("token_type", "bearer")
             }
         }
@@ -26,8 +26,8 @@ fun ProviderRegistry.digitalOcean() = registerProvider("digital-ocean") {
         }
 
         response {
-            json {
-                val account = it["account"]!!.jsonObject
+            json {(data) ->
+                val account = data["account"]!!.jsonObject
                 put("sub", account["uuid"]!!)
                 put("email", account["email"]!!)
             }

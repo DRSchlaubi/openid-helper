@@ -13,9 +13,9 @@ fun ProviderRegistry.amazon() = registerProvider("amazon") {
         }
 
         response {
-            json {
-                put("sub", it["user_id"]!!)
-                put("email", it["email"]!!)
+            json {(data) ->
+                put("sub", data["user_id"]!!)
+                put("email", data["email"]!!)
             }
         }
     }

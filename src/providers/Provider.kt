@@ -25,7 +25,6 @@ import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.buildJsonObject
 
 typealias URLUpdater = URLBuilder.(ApplicationCall) -> Unit
-typealias RequestUpdater<T> = HttpRequestBuilder.(T, ApplicationCall) -> Unit
 
 data class Provider(
     val name: String,
@@ -46,48 +45,56 @@ data class Provider(
 
     interface Interceptor<T> {
         val urlUpdater: URLUpdater
-        val requestUpdater: RequestUpdater<T>
         val typeInfo: TypeInfo? get() = null
 
         suspend fun ApplicationCall.receiveBody(): T
         suspend fun HttpResponse.receiveBody(): T
 
-        suspend fun T.toResult(): Any
+        suspend fun T.toResult(call: ApplicationCall, request: HttpRequestBuilder): Any
+        suspend fun T.toResult(response: HttpResponse): Any
 
         fun emptyBody(): T
 
         fun with(
             urlUpdater: URLUpdater = this.urlUpdater,
-            requestUpdater: RequestUpdater<T> = this.requestUpdater
         ): Interceptor<T>
     }
 
     open class NoopInterceptor(
         override val urlUpdater: URLUpdater = { },
-        override val requestUpdater: RequestUpdater<ByteReadChannel> = { _, _ -> }
     ) : Interceptor<ByteReadChannel> {
         override suspend fun ApplicationCall.receiveBody(): ByteReadChannel = receiveChannel()
         override suspend fun HttpResponse.receiveBody(): ByteReadChannel = bodyAsChannel()
 
-        override suspend fun ByteReadChannel.toResult(): Any = this
+        override suspend fun ByteReadChannel.toResult(call: ApplicationCall, request: HttpRequestBuilder): Any = this
+        override suspend fun ByteReadChannel.toResult(response: HttpResponse): Any = this
         override fun emptyBody(): ByteReadChannel = ByteReadChannel(byteArrayOf())
 
         override fun with(
             urlUpdater: URLUpdater,
-            requestUpdater: RequestUpdater<ByteReadChannel>
-        ) = NoopInterceptor(urlUpdater = urlUpdater, requestUpdater = requestUpdater)
+        ) = NoopInterceptor(urlUpdater = urlUpdater)
 
         companion object : NoopInterceptor()
     }
 
     data class FormInterceptor(
-        private val block: ParametersBuilder.() -> Unit,
+        private val requestBuilder: ParametersBuilder.(Parameters, ApplicationCall, HttpRequestBuilder) -> Unit,
+        private val responseBuilder: ParametersBuilder.(Parameters, HttpResponse) -> Unit,
         override val urlUpdater: URLUpdater,
-        override val requestUpdater: RequestUpdater<Parameters>
     ) : Interceptor<Parameters> {
         override suspend fun ApplicationCall.receiveBody(): Parameters = receiveParameters()
         override suspend fun HttpResponse.receiveBody(): Parameters = body()
-        override suspend fun Parameters.toResult(): OutgoingContent {
+
+        override suspend fun Parameters.toResult(call: ApplicationCall, request: HttpRequestBuilder): Any =
+            toResult body@{
+                requestBuilder.invoke(this, this@toResult, call, request)
+            }
+
+        override suspend fun Parameters.toResult(response: HttpResponse): Any = toResult body@{
+            responseBuilder.invoke(this, this@toResult, response)
+        }
+
+        private suspend fun Parameters.toResult(block: suspend ParametersBuilder.() -> Unit): OutgoingContent {
             val parameters = Parameters.build {
                 appendAll(this@toResult)
                 block()
@@ -97,15 +104,14 @@ data class Provider(
         }
 
         override fun emptyBody(): Parameters = Parameters.Empty
-
-        override fun with(urlUpdater: URLUpdater, requestUpdater: RequestUpdater<Parameters>) =
-            copy(urlUpdater = urlUpdater, requestUpdater = requestUpdater)
+        override fun with(urlUpdater: URLBuilder.(ApplicationCall) -> Unit): Interceptor<Parameters> =
+            copy(urlUpdater = urlUpdater)
     }
 
     data class JsonInterceptor(
-        private val block: JsonObjectBuilder.(JsonObject) -> Unit,
+        private val requestBuilder: JsonObjectBuilder.(JsonObject, ApplicationCall, HttpRequestBuilder) -> Unit,
+        private val responseBuilder: JsonObjectBuilder.(JsonObject, HttpResponse) -> Unit,
         override val urlUpdater: URLUpdater,
-        override val requestUpdater: RequestUpdater<JsonObject>
     ) : Interceptor<JsonObject> {
         override val typeInfo: TypeInfo = typeInfo<JsonObject>()
         override suspend fun ApplicationCall.receiveBody(): JsonObject = receive()
@@ -118,17 +124,26 @@ data class Provider(
             }
         }
 
-        override suspend fun JsonObject.toResult(): Any {
-            val elements = buildJsonObject {
-                block(this@toResult)
+        override suspend fun JsonObject.toResult(call: ApplicationCall, request: HttpRequestBuilder): Any =
+            toResult body@{
+                requestBuilder.invoke(this, this@toResult, call, request)
             }
 
-            return JsonObject(elements)
+        override suspend fun JsonObject.toResult(response: HttpResponse): Any = toResult body@{
+            responseBuilder.invoke(this, this@toResult, response)
+        }
+
+        private suspend fun JsonObject.toResult(block: suspend JsonObjectBuilder.() -> Unit): JsonObject {
+            val elements = buildJsonObject {
+                block(this)
+            }
+
+            return JsonObject(this + elements)
         }
 
         override fun emptyBody(): JsonObject = JsonObject(emptyMap())
 
-        override fun with(urlUpdater: URLUpdater, requestUpdater: RequestUpdater<JsonObject>) =
-            copy(urlUpdater = urlUpdater, requestUpdater = requestUpdater)
+        override fun with(urlUpdater: URLUpdater) =
+            copy(urlUpdater = urlUpdater)
     }
 }

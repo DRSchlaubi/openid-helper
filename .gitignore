@@ -55,5 +55,6 @@ gradle-app.setting
 *.hprof
 
 .kotlin
+storage/
 
 # End of https://www.toptal.com/developers/gitignore/api/kotlin,gradle

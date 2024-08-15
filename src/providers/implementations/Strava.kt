@@ -13,9 +13,9 @@ fun ProviderRegistry.strava() = registerProvider("strava") {
         }
 
         response {
-            json {
-                put("sub", it["id"]!!)
-                put("preferred_username", it["username"]!!)
+            json { (data) ->
+                put("sub", data["id"]!!)
+                put("preferred_username", data["username"]!!)
             }
         }
     }

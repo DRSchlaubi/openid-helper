@@ -17,16 +17,18 @@ fun ProviderRegistry.eBay() = registerProvider("ebay") {
 
     userEndpoint {
         request {
-            json({ _, call ->
-                bearerAuth(call.request.authorization()?.drop("User Access Token ".length).toString())
-            }) {}
+            json {(data, call, request) ->
+                request.bearerAuth(call.request.authorization()?.drop("User Access Token ".length).toString())
+
+                data.forEach(::put)
+            }
             url("https://apiz.ebay.com/commerce/identity/v1/user/")
         }
 
         response {
-            json {
-                put("sub", it["userId"]!!)
-                put("preferred_username", it["username"]!!)
+            json {(data) ->
+                put("sub", data["userId"]!!)
+                put("preferred_username", data["username"]!!)
             }
         }
     }

@@ -16,8 +16,8 @@ fun ProviderRegistry.tumblr() = registerProvider("tumlbr") {
         }
 
         response {
-            json {
-                val response = it["response"]!!.jsonObject
+            json {(data) ->
+                val response = data["response"]!!.jsonObject
                 val user = response["user"]!!.jsonObject
                 put("sub", user["name"]!!)
                 put("preferred_username", user["name"]!!)

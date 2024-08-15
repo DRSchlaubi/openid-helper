@@ -13,10 +13,10 @@ fun ProviderRegistry.wordpressCom() = registerProvider("wordpress") {
         }
 
         response {
-            json {
-                put("sub", it["ID"]!!)
-                put("preferred_username", it["username"]!!)
-                put("email", it["email"]!!)
+            json { (data) ->
+                put("sub", data["ID"]!!)
+                put("preferred_username", data["username"]!!)
+                put("email", data["email"]!!)
             }
         }
     }

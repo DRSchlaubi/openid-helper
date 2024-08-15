@@ -2,6 +2,8 @@ package dev.schlaubi.openid.helper
 
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
+import io.ktor.resources.href
+import io.ktor.resources.serialization.ResourcesFormat
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlin.contracts.ExperimentalContracts
@@ -21,11 +23,25 @@ object Config : EnvironmentConfig() {
     val HOSTNAME by getEnv(Url("http://localhost:8080"), ::Url)
     val EPIC_DEPLOYMENT_ID by this
     val AMAZON_REGION by getEnv(AmazonRegion.EUROPE, ::enumValueOf)
+    val JWT_SECRET by getEnv("verrysecurenonsense")
+    val MASTODON_NAME by getEnv("OpenID Helper")
 }
 
-inline fun <reified R : Any> Application.fullHref(resource: R): String {
+@OptIn(ExperimentalContracts::class)
+inline fun <reified R : Any> Application.fullHref(resource: R, build: URLBuilder.() -> Unit = {}): String {
+    contract {
+        callsInPlace(build, InvocationKind.AT_MOST_ONCE)
+    }
+
     return URLBuilder(Config.HOSTNAME).apply {
         href(resource, this)
+        build()
+    }.buildString()
+}
+
+inline fun <reified R : Any> fullHref(resource: R): String {
+    return URLBuilder(Config.HOSTNAME).apply {
+        href(ResourcesFormat(), resource, this)
     }.buildString()
 }
 

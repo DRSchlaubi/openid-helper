@@ -12,11 +12,11 @@ fun ProviderRegistry.figma() = registerProvider("figma") {
     token {
         request {
             url("https://www.figma.com/api/oauth/token")
-            formBody({ _, _ -> accept(ContentType.Application.Json) }) {}
+            formBody { (_, _, request) -> request.accept(ContentType.Application.Json) }
         }
         response {
-            json {
-                it.forEach(::put)
+            json { (data) ->
+                data.forEach(::put)
                 put("token_type", "bearer")
             }
         }
@@ -30,10 +30,10 @@ fun ProviderRegistry.figma() = registerProvider("figma") {
         }
 
         response {
-            json {
-                put("sub", it["id"]!!)
-                put("email", it["email"]!!)
-                put("preferred_username", it["handle"]!!)
+            json { (data) ->
+                put("sub", data["id"]!!)
+                put("email", data["email"]!!)
+                put("preferred_username", data["handle"]!!)
             }
         }
     }

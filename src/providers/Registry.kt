@@ -8,6 +8,7 @@ import dev.schlaubi.openid.helper.providers.implementations.epicGames
 import dev.schlaubi.openid.helper.providers.implementations.figma
 import dev.schlaubi.openid.helper.providers.implementations.fitbit
 import dev.schlaubi.openid.helper.providers.implementations.imgur
+import dev.schlaubi.openid.helper.providers.implementations.mastodon.mastodon
 import dev.schlaubi.openid.helper.providers.implementations.strava
 import dev.schlaubi.openid.helper.providers.implementations.traewelling
 import dev.schlaubi.openid.helper.providers.implementations.tumblr
@@ -31,6 +32,7 @@ val providers = buildMap<String, Provider> {
     figma()
     atlassian()
     traewelling()
+    mastodon()
 }
 
 @OptIn(ExperimentalContracts::class)

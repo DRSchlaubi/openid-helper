@@ -31,7 +31,8 @@ import io.ktor.server.util.url
 import io.ktor.util.filter
 
 val LOG = KotlinLogging.logger { }
-val PROXY_HEADERS = listOf(HttpHeaders.Host)
+val PROXY_HEADERS =
+    listOf(HttpHeaders.Host, HttpHeaders.XForwardedFor, HttpHeaders.XForwardedProto, HttpHeaders.XForwardedHost)
 
 val httpClient = HttpClient(OkHttp) {
     install(ContentNegotiation) {
@@ -105,14 +106,14 @@ inline fun <reified R : HasProvider> Route.proxyRoute(
 
 suspend fun <T> HttpResponse.interceptBody(interceptor: Provider.Interceptor<T>): Any = with(interceptor) {
     val body = receiveBody()
-    return body.toResult()
+    return body.toResult(this@interceptBody)
 }
 
 suspend fun <T> HttpRequestBuilder.intercept(call: ApplicationCall, interceptor: Provider.Interceptor<T>) =
     with(interceptor) {
         val body = if (method != HttpMethod.Get) call.receiveBody() else interceptor.emptyBody()
-        requestUpdater(body, call)
+        val newBody = body.toResult(call, this@intercept)
         if (method != HttpMethod.Get) {
-            setBody(body.toResult())
+            setBody(newBody)
         }
     }
