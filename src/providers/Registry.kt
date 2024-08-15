@@ -2,6 +2,7 @@ package dev.schlaubi.openid.helper.providers
 
 import dev.schlaubi.openid.helper.providers.implementations.amazon
 import dev.schlaubi.openid.helper.providers.implementations.atlassian
+import dev.schlaubi.openid.helper.providers.implementations.bitbucket
 import dev.schlaubi.openid.helper.providers.implementations.digitalOcean
 import dev.schlaubi.openid.helper.providers.implementations.eBay
 import dev.schlaubi.openid.helper.providers.implementations.epicGames
@@ -33,6 +34,7 @@ val providers = buildMap<String, Provider> {
     atlassian()
     traewelling()
     mastodon()
+    bitbucket()
 }
 
 @OptIn(ExperimentalContracts::class)
