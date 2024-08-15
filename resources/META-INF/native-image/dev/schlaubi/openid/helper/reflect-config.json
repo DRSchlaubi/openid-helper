@@ -36,6 +36,14 @@
     ]
   },
   {
+    "name": "dev.schlaubi.openid.helper.providers.implementations.mastodon.MastodonOAuthApplication",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
     "name": "dev.schlaubi.openid.helper.providers.implementations.mastodon.MastodonOAuthApplication$Companion",
     "methods": [
       {
