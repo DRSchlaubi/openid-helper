@@ -19,6 +19,13 @@ import io.ktor.server.resources.href
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
+fun ApplicationCall.verifyOauth() {
+    val redirectUri = parameters["redirect_uri"]
+    val clientId = parameters["client_id"]
+    if (clientId != Config.MASTODON_CLIENT_ID) throw BadRequestException("Invalid client id")
+    if (redirectUri != Config.MASTODON_REDIRECT_URI) throw BadRequestException("Invalid redirect uri")
+}
+
 fun ProviderRegistry.mastodon() = registerProvider("mastodon") {
     authorize {
         val clientId = it.parameters["client_id"]!!
@@ -27,9 +34,9 @@ fun ProviderRegistry.mastodon() = registerProvider("mastodon") {
         val state = it.parameters["state"]!!
         val responseType = it.parameters["response_type"]!!
 
-        if (clientId != Config.MASTODON_CLIENT_ID) throw BadRequestException("Invalid client id")
+        it.verifyOauth()
 
-        clear()
+        parameters.clear()
         it.application.href(
             Mastodon.SelectHost(
                 clientId, scope, redirectUri, state, responseType

@@ -27,6 +27,7 @@ object Config : EnvironmentConfig() {
     val MASTODON_NAME by getEnv("OpenID Helper")
     val MASTODON_CLIENT_ID by getEnv("appleistdoof")
     val MASTODON_CLIENT_SECRET by getEnv("werdasliestkannlesen")
+    val MASTODON_REDIRECT_URI by this
 }
 
 @OptIn(ExperimentalContracts::class)

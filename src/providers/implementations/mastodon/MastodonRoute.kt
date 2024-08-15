@@ -108,6 +108,7 @@ private val states = mutableMapOf<String, State>()
 
 fun Route.mastodon() {
     get<Mastodon.SelectHost> { route ->
+        call.verifyOauth()
         val (_, _, _, _, _, isInvalid, prefill) = route
         call.respondHtml {
             head {
@@ -137,6 +138,7 @@ fun Route.mastodon() {
                     }
                     form(method = FormMethod.post) {
                         input(InputType.text, name = "host") {
+                            required = true
                             placeholder = "mastodon.social"
                             //language=JavaScript
                             onChange = """
@@ -160,6 +162,7 @@ fun Route.mastodon() {
     }
 
     post<Mastodon.SelectHost> {
+        call.verifyOauth()
         val mastodonHost = call.receiveParameters()["host"] ?: throw BadRequestException("Missing host")
         val url = URLBuilder().apply {
             if (!mastodonHost.startsWith("http")) {
@@ -170,18 +173,23 @@ fun Route.mastodon() {
             }
         }.build()
         val client = getClient(url.toString()) ?: run {
-            val applicationResponse = registerMastodonApplication(
-                it.scope,
-                call.application.fullHref(Mastodon.CallbackBase()),
-                url,
-                Config.MASTODON_NAME
-            )
-            if (applicationResponse.status.isSuccess()) {
+            val applicationResponse = try {
+                registerMastodonApplication(
+                    it.scope,
+                    call.application.fullHref(Mastodon.CallbackBase()),
+                    url,
+                    Config.MASTODON_NAME
+                )
+            } catch (e: Exception) {
+                LOG.debug(e) { "Could not register application" }
+                null
+            }
+            if (applicationResponse != null && applicationResponse.status.isSuccess()) {
                 applicationResponse.body<MastodonOAuthApplication>().also {
                     addClient(url.toString(), it)
                 }
             } else {
-                val body = applicationResponse.bodyAsText()
+                val body = applicationResponse?.bodyAsText()
                 LOG.error { "Could not register application: $body" }
                 call.respondRedirect(call.application.href(it.copy(prefill = url.toString(), isInvalid = true)))
                 return@post
