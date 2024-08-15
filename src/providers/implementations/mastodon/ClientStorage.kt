@@ -19,6 +19,9 @@ private val saveFile = Path("storage/mastodon_clients.json")
 
 suspend fun addClient(url: String, client: MastodonOAuthApplication) = lock.withLock {
     clients[url] = client
+    if (!SystemFileSystem.exists(saveFile.parent!!)) {
+        SystemFileSystem.createDirectories(saveFile.parent!!)
+    }
     SystemFileSystem.sink(saveFile).buffered().use {
         Json.encodeToSink(clients, it)
     }
