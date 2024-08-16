@@ -34,6 +34,7 @@ val providers = buildMap<String, Provider> {
     vimeo()
     linode()
     stackExchange()
+    nitrado()
 }
 
 @OptIn(ExperimentalContracts::class)
