@@ -7,6 +7,7 @@ import dev.schlaubi.openid.helper.providers.implementations.box
 import dev.schlaubi.openid.helper.providers.implementations.bungie
 import dev.schlaubi.openid.helper.providers.implementations.coinbase
 import dev.schlaubi.openid.helper.providers.implementations.digitalOcean
+import dev.schlaubi.openid.helper.providers.implementations.dribbble
 import dev.schlaubi.openid.helper.providers.implementations.eBay
 import dev.schlaubi.openid.helper.providers.implementations.epicGames
 import dev.schlaubi.openid.helper.providers.implementations.figma
@@ -41,6 +42,7 @@ val providers = buildMap<String, Provider> {
     coinbase()
     box()
     bungie()
+    dribbble()
 }
 
 @OptIn(ExperimentalContracts::class)
