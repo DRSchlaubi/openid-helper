@@ -31,6 +31,8 @@ val providers = buildMap<String, Provider> {
     yandex()
     osu()
     rocketbeans()
+    vimeo()
+    linode()
 }
 
 @OptIn(ExperimentalContracts::class)
