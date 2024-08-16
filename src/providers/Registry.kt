@@ -14,6 +14,7 @@ import dev.schlaubi.openid.helper.providers.implementations.figma
 import dev.schlaubi.openid.helper.providers.implementations.fitbit
 import dev.schlaubi.openid.helper.providers.implementations.imgur
 import dev.schlaubi.openid.helper.providers.implementations.mastodon.mastodon
+import dev.schlaubi.openid.helper.providers.implementations.osu
 import dev.schlaubi.openid.helper.providers.implementations.strava
 import dev.schlaubi.openid.helper.providers.implementations.traewelling
 import dev.schlaubi.openid.helper.providers.implementations.tumblr
@@ -47,6 +48,7 @@ val providers = buildMap<String, Provider> {
     dribbble()
     vk()
     yandex()
+    osu()
 }
 
 @OptIn(ExperimentalContracts::class)
