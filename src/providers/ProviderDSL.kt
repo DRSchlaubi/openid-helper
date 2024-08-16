@@ -9,6 +9,8 @@ import io.ktor.http.Parameters
 import io.ktor.http.ParametersBuilder
 import io.ktor.http.takeFrom
 import io.ktor.server.application.ApplicationCall
+import io.ktor.util.reflect.*
+import io.ktor.utils.io.*
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
 import kotlin.contracts.ExperimentalContracts
@@ -91,8 +93,10 @@ class RouteInterceptorBuilder {
 
 @ProviderDSL
 open class InterceptorBuilder {
-    protected var interceptor: Provider.Interceptor<*> = Provider.NoopInterceptor
-    protected var urlUpdater: URLUpdater = {}
+    @PublishedApi
+    internal var interceptor: Provider.Interceptor<*> = Provider.NoopInterceptor
+    @PublishedApi
+    internal var urlUpdater: URLUpdater = {}
 
     fun url(block: URLUpdater) {
         urlUpdater = block
@@ -121,6 +125,14 @@ class RequestInterceptorBuilder : InterceptorBuilder() {
         }, { _, _ -> }, urlUpdater)
     }
 
+    inline fun <reified T> plainText(
+        noinline builder: suspend (RequestContext<ByteReadChannel>) -> Any
+    ) {
+        interceptor = Provider.TextInterceptor(typeInfo<T>(), { data, call, request ->
+            builder(RequestContext(data, call, request))
+        }, { _, _ -> }, urlUpdater)
+    }
+
     fun build() = interceptor.with(urlUpdater)
 }
 
@@ -140,7 +152,11 @@ class RequestResponseBuilder : InterceptorBuilder() {
     ) {
         interceptor = Provider.FormInterceptor({ _, _, _ ->
         }, { data, response -> builder(ResponseContext(data, response)) }, urlUpdater)
+    }
 
+     inline fun <reified T> plainText(noinline builder: suspend (ResponseContext<ByteReadChannel>) -> Any) {
+         interceptor = Provider.TextInterceptor(typeInfo<T>(), { _, _, _ ->
+        }, { data, response -> builder(ResponseContext(data, response)) }, urlUpdater)
     }
 
     fun build() = interceptor.with(urlUpdater)

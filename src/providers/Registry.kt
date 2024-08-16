@@ -33,6 +33,7 @@ val providers = buildMap<String, Provider> {
     rocketbeans()
     vimeo()
     linode()
+    stackExchange()
 }
 
 @OptIn(ExperimentalContracts::class)

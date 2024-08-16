@@ -77,6 +77,28 @@ data class Provider(
         companion object : NoopInterceptor()
     }
 
+    data class TextInterceptor(
+        override val typeInfo: TypeInfo,
+        private val requestBuilder: suspend (ByteReadChannel, ApplicationCall, HttpRequestBuilder) -> Any,
+        private val responseBuilder: suspend (ByteReadChannel, HttpResponse) -> Any,
+        override val urlUpdater: URLUpdater = { },
+    ) : Interceptor<ByteReadChannel> {
+        override suspend fun ApplicationCall.receiveBody(): ByteReadChannel = receiveChannel()
+        override suspend fun HttpResponse.receiveBody(): ByteReadChannel = bodyAsChannel()
+
+        override suspend fun ByteReadChannel.toResult(call: ApplicationCall, request: HttpRequestBuilder): Any =
+            requestBuilder(this, call, request)
+
+        override suspend fun ByteReadChannel.toResult(response: HttpResponse): Any = responseBuilder(this, response)
+        override fun emptyBody(): ByteReadChannel = ByteReadChannel(byteArrayOf())
+
+        override fun with(
+            urlUpdater: URLUpdater,
+        ) = copy(urlUpdater = urlUpdater)
+
+        companion object : NoopInterceptor()
+    }
+
     data class FormInterceptor(
         private val requestBuilder: ParametersBuilder.(Parameters, ApplicationCall, HttpRequestBuilder) -> Unit,
         private val responseBuilder: ParametersBuilder.(Parameters, HttpResponse) -> Unit,
