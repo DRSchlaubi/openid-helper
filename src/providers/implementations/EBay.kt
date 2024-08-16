@@ -17,10 +17,8 @@ fun ProviderRegistry.eBay() = registerProvider("ebay") {
 
     userEndpoint {
         request {
-            json {(data, call, request) ->
+            json {(_, call, request) ->
                 request.bearerAuth(call.request.authorization()?.drop("User Access Token ".length).toString())
-
-                data.forEach(::put)
             }
             url("https://apiz.ebay.com/commerce/identity/v1/user/")
         }

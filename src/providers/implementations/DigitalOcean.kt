@@ -13,8 +13,7 @@ fun ProviderRegistry.digitalOcean() = registerProvider("digital-ocean") {
         }
 
         response {
-            json {(data) ->
-                data.forEach(::put)
+            json {
                 put("token_type", "bearer")
             }
         }

@@ -17,6 +17,7 @@ import dev.schlaubi.openid.helper.providers.implementations.mastodon.mastodon
 import dev.schlaubi.openid.helper.providers.implementations.strava
 import dev.schlaubi.openid.helper.providers.implementations.traewelling
 import dev.schlaubi.openid.helper.providers.implementations.tumblr
+import dev.schlaubi.openid.helper.providers.implementations.vk
 import dev.schlaubi.openid.helper.providers.implementations.wordpressCom
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -43,6 +44,7 @@ val providers = buildMap<String, Provider> {
     box()
     bungie()
     dribbble()
+    vk()
 }
 
 @OptIn(ExperimentalContracts::class)

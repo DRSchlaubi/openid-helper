@@ -15,8 +15,7 @@ fun ProviderRegistry.figma() = registerProvider("figma") {
             formBody { (_, _, request) -> request.accept(ContentType.Application.Json) }
         }
         response {
-            json { (data) ->
-                data.forEach(::put)
+            json { (_) ->
                 put("token_type", "bearer")
             }
         }
