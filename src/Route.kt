@@ -11,11 +11,13 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.request
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentLength
 import io.ktor.http.contentType
+import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
@@ -91,10 +93,11 @@ inline fun <reified R : HasProvider> Route.proxyRoute(
 
             LOG.info { "Forwarded request to ${response.request.url}, response: ${response.status}" }
 
-            val body = response.interceptBody(interceptor.response)
+            val body =
+                if (response.status.isSuccess()) response.interceptBody(interceptor.response) else response.bodyAsChannel()
             call.response.status(response.status)
             call.response.header(HttpHeaders.ContentType, response.contentType().toString())
-            if (interceptor.response.typeInfo != null) {
+            if (response.status.isSuccess() && interceptor.response.typeInfo != null) {
                 call.respond(body, interceptor.response.typeInfo!!)
             } else {
                 call.response.header(HttpHeaders.ContentLength, response.contentLength().toString())
