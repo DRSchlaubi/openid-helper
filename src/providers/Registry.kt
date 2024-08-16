@@ -4,6 +4,7 @@ import dev.schlaubi.openid.helper.providers.implementations.amazon
 import dev.schlaubi.openid.helper.providers.implementations.atlassian
 import dev.schlaubi.openid.helper.providers.implementations.bitbucket
 import dev.schlaubi.openid.helper.providers.implementations.box
+import dev.schlaubi.openid.helper.providers.implementations.bungie
 import dev.schlaubi.openid.helper.providers.implementations.coinbase
 import dev.schlaubi.openid.helper.providers.implementations.digitalOcean
 import dev.schlaubi.openid.helper.providers.implementations.eBay
@@ -39,6 +40,7 @@ val providers = buildMap<String, Provider> {
     bitbucket()
     coinbase()
     box()
+    bungie()
 }
 
 @OptIn(ExperimentalContracts::class)
