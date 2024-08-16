@@ -1,26 +1,7 @@
 package dev.schlaubi.openid.helper.providers
 
-import dev.schlaubi.openid.helper.providers.implementations.amazon
-import dev.schlaubi.openid.helper.providers.implementations.atlassian
-import dev.schlaubi.openid.helper.providers.implementations.bitbucket
-import dev.schlaubi.openid.helper.providers.implementations.box
-import dev.schlaubi.openid.helper.providers.implementations.bungie
-import dev.schlaubi.openid.helper.providers.implementations.coinbase
-import dev.schlaubi.openid.helper.providers.implementations.digitalOcean
-import dev.schlaubi.openid.helper.providers.implementations.dribbble
-import dev.schlaubi.openid.helper.providers.implementations.eBay
-import dev.schlaubi.openid.helper.providers.implementations.epicGames
-import dev.schlaubi.openid.helper.providers.implementations.figma
-import dev.schlaubi.openid.helper.providers.implementations.fitbit
-import dev.schlaubi.openid.helper.providers.implementations.imgur
+import dev.schlaubi.openid.helper.providers.implementations.*
 import dev.schlaubi.openid.helper.providers.implementations.mastodon.mastodon
-import dev.schlaubi.openid.helper.providers.implementations.osu
-import dev.schlaubi.openid.helper.providers.implementations.strava
-import dev.schlaubi.openid.helper.providers.implementations.traewelling
-import dev.schlaubi.openid.helper.providers.implementations.tumblr
-import dev.schlaubi.openid.helper.providers.implementations.vk
-import dev.schlaubi.openid.helper.providers.implementations.wordpressCom
-import dev.schlaubi.openid.helper.providers.implementations.yandex
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -49,6 +30,7 @@ val providers = buildMap<String, Provider> {
     vk()
     yandex()
     osu()
+    rocketbeans()
 }
 
 @OptIn(ExperimentalContracts::class)
