@@ -35,6 +35,7 @@ val providers = buildMap<String, Provider> {
     linode()
     stackExchange()
     nitrado()
+    mixcloud()
 }
 
 @OptIn(ExperimentalContracts::class)
