@@ -38,6 +38,7 @@ val providers = buildMap {
     mixcloud()
     dailymotion()
     deviantart()
+    heroku()
 }
 
 @OptIn(ExperimentalContracts::class)
