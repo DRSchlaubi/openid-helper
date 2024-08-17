@@ -36,6 +36,7 @@ val providers = buildMap<String, Provider> {
     stackExchange()
     nitrado()
     mixcloud()
+    dailymotion()
 }
 
 @OptIn(ExperimentalContracts::class)
