@@ -8,7 +8,7 @@ import kotlin.contracts.contract
 
 typealias ProviderRegistry = MutableMap<String, Provider>
 
-val providers = buildMap<String, Provider> {
+val providers = buildMap {
     epicGames()
     amazon()
     eBay()
