@@ -39,6 +39,7 @@ val providers = buildMap {
     dailymotion()
     deviantart()
     heroku()
+    bitly()
 }
 
 @OptIn(ExperimentalContracts::class)
