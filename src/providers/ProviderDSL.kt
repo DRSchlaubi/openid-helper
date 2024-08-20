@@ -27,6 +27,8 @@ class ProviderBuilder(private val name: String) {
     private var authorize: URLUpdater = { }
     private var token: RouteInterceptor = RouteInterceptor.Forward
     private var userEndpoint: RouteInterceptor = RouteInterceptor.Forward
+    private var additionalRoutes: RouteBuilder? = null
+
     var jwksEndpoint: String? = null
     var useOauth1a: Boolean = false
 
@@ -64,7 +66,11 @@ class ProviderBuilder(private val name: String) {
         }
     }
 
-    fun build(): Provider = Provider(name, authorize, useOauth1a, token, userEndpoint, jwksEndpoint)
+    fun routing(block: RouteBuilder) {
+        additionalRoutes = block
+    }
+
+    fun build(): Provider = Provider(name, authorize, useOauth1a, token, userEndpoint, jwksEndpoint, additionalRoutes)
 }
 
 @ProviderDSL
@@ -95,6 +101,7 @@ class RouteInterceptorBuilder {
 open class InterceptorBuilder {
     @PublishedApi
     internal var interceptor: Provider.Interceptor<*> = Provider.NoopInterceptor
+
     @PublishedApi
     internal var urlUpdater: URLUpdater = {}
 
@@ -141,7 +148,7 @@ class RequestResponseBuilder : InterceptorBuilder() {
     data class ResponseContext<T>(val data: T, val response: HttpResponse)
 
     fun json(
-        builder: JsonObjectBuilder.(ResponseContext<JsonObject>) -> Unit
+        builder: suspend JsonObjectBuilder.(ResponseContext<JsonObject>) -> Unit
     ) {
         interceptor = Provider.JsonInterceptor({ _, _, _ ->
         }, { data, response -> builder(ResponseContext(data, response)) }, urlUpdater)
@@ -154,8 +161,8 @@ class RequestResponseBuilder : InterceptorBuilder() {
         }, { data, response -> builder(ResponseContext(data, response)) }, urlUpdater)
     }
 
-     inline fun <reified T> plainText(noinline builder: suspend (ResponseContext<ByteReadChannel>) -> Any) {
-         interceptor = Provider.TextInterceptor(typeInfo<T>(), { _, _, _ ->
+    inline fun <reified T> plainText(noinline builder: suspend (ResponseContext<ByteReadChannel>) -> Any) {
+        interceptor = Provider.TextInterceptor(typeInfo<T>(), { _, _, _ ->
         }, { data, response -> builder(ResponseContext(data, response)) }, urlUpdater)
     }
 

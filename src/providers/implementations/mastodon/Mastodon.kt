@@ -91,6 +91,8 @@ fun ProviderRegistry.mastodon() = registerProvider("mastodon") {
             }
         }
     }
+
+    routing { mastodon() }
 }
 
 private val ApplicationCall.auth: Token

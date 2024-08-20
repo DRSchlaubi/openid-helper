@@ -16,6 +16,7 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receive
 import io.ktor.server.request.receiveChannel
 import io.ktor.server.request.receiveParameters
+import io.ktor.server.routing.Route
 import io.ktor.util.reflect.TypeInfo
 import io.ktor.util.reflect.typeInfo
 import io.ktor.utils.io.ByteReadChannel
@@ -24,7 +25,9 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.buildJsonObject
 
-typealias URLUpdater = URLBuilder.(ApplicationCall) -> Unit
+typealias URLUpdater = suspend URLBuilder.(ApplicationCall) -> Unit
+
+typealias RouteBuilder = Route.() -> Unit
 
 data class Provider(
     val name: String,
@@ -32,7 +35,8 @@ data class Provider(
     val oauth1a: Boolean,
     val token: RouteInterceptor,
     val userEndpoint: RouteInterceptor,
-    val jwksEndpoint: String? = null
+    val jwksEndpoint: String? = null,
+    val additionalRoutes: RouteBuilder? = null,
 ) {
     data class RouteInterceptor(
         val request: Interceptor<*>,
@@ -126,13 +130,13 @@ data class Provider(
         }
 
         override fun emptyBody(): Parameters = Parameters.Empty
-        override fun with(urlUpdater: URLBuilder.(ApplicationCall) -> Unit): Interceptor<Parameters> =
+        override fun with(urlUpdater: URLUpdater): Interceptor<Parameters> =
             copy(urlUpdater = urlUpdater)
     }
 
     data class JsonInterceptor(
         private val requestBuilder: JsonObjectBuilder.(JsonObject, ApplicationCall, HttpRequestBuilder) -> Unit,
-        private val responseBuilder: JsonObjectBuilder.(JsonObject, HttpResponse) -> Unit,
+        private val responseBuilder: suspend JsonObjectBuilder.(JsonObject, HttpResponse) -> Unit,
         override val urlUpdater: URLUpdater,
     ) : Interceptor<JsonObject> {
         override val typeInfo: TypeInfo = typeInfo<JsonObject>()
