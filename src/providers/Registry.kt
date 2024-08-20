@@ -41,6 +41,7 @@ val providers = buildMap {
     heroku()
     bitly()
     bbn()
+    lastfm()
 }
 
 @OptIn(ExperimentalContracts::class)
