@@ -19,8 +19,8 @@ private val verifier = JWT
     .build()
 
 fun verifyToken(token: String): Token {
-    val token = verifier.verify(token)
-    return Token(token.issuer, token.claims.get("token")!!.asString())
+    val decoded = verifier.verify(token)
+    return Token(decoded.issuer, decoded.claims["token"]!!.asString())
 }
 
 private inline fun newKey(url: String, block: JWTCreator.Builder.() -> Unit) = JWT.create()

@@ -16,7 +16,7 @@ fun ProviderRegistry.vk() = registerProvider("vk") {
             url("https://oauth.vk.com/access_token")
         }
         response {
-            json {(data) ->
+            json {
                 put("token_type", "bearer")
             }
         }

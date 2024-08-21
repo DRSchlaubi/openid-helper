@@ -37,6 +37,7 @@ import kotlinx.html.onChange
 import kotlinx.html.p
 import kotlinx.html.style
 import kotlinx.html.title
+import kotlinx.html.unsafe
 import org.intellij.lang.annotations.Language
 import kotlin.text.startsWith
 
@@ -118,7 +119,9 @@ fun Route.mastodon() {
 
             body {
                 style {
-                    +css
+                    unsafe {
+                        +css
+                    }
                 }
 
                 div("centered-div") {

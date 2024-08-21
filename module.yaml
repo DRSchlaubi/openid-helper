@@ -3,6 +3,8 @@ product: jvm/app
 settings:
   kotlin:
     serialization: json
+  jvm:
+    release: 22
 
 dependencies:
   - $libs.kotlinx.io
