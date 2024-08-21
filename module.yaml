@@ -15,7 +15,6 @@ dependencies:
   - $libs.ktor.server.content.negotiation
   - $libs.ktor.server.resources
   - $libs.ktor.server.auth
-  - $libs.ktor.server.html.builder
   - $libs.ktor.server.status.pages
   - $libs.ktor.client.okhttp
   - $libs.ktor.client.content.negotiation
