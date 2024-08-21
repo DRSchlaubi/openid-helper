@@ -3,9 +3,11 @@ package dev.schlaubi.openid.helper.providers.implementations
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import dev.schlaubi.openid.helper.Config
+import dev.schlaubi.openid.helper.ProviderRoute
 import dev.schlaubi.openid.helper.buildUrl
 import dev.schlaubi.openid.helper.providers.ProviderRegistry
 import dev.schlaubi.openid.helper.providers.registerProvider
+import dev.schlaubi.openid.helper.util.md5
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.statement.request
 import io.ktor.http.ParametersBuilder
@@ -17,13 +19,12 @@ import io.ktor.server.application.call
 import io.ktor.server.auth.parseAuthorizationHeader
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.response.respondRedirect
-import io.ktor.server.routing.get
+import io.ktor.server.resources.get
 import io.ktor.util.date.GMTDate
 import io.ktor.util.date.plus
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
-import java.security.MessageDigest
 import kotlin.time.Duration.Companion.minutes
 
 private data class Sate(val redirectUrl: String)
@@ -119,7 +120,7 @@ fun ProviderRegistry.lastfm() = registerProvider("lastfm") {
     }
 
     routing {
-        get("/providers/lastfm/callback") {
+        get<ProviderRoute.Callback> {
             val stateName = call.request.cookies["state"]
             val state = states[stateName] ?: throw BadRequestException("State is missing")
             val token = call.parameters["token"] ?: throw BadRequestException("Token is missing")
@@ -152,7 +153,5 @@ private fun ParametersBuilder.sign(method: String, clientSecret: String, clientI
         append(clientSecret.encodeURLParameter())
     }
 
-    val md5 = MessageDigest.getInstance("MD5")
-    val apiSig = md5.digest(signatureBase.toByteArray()).toHexString()
-    append("api_sig", apiSig)
+    append("api_sig", signatureBase.md5())
 }

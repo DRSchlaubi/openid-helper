@@ -1,5 +1,6 @@
 package dev.schlaubi.openid.helper
 
+import dev.schlaubi.openid.helper.ProviderRoute.UserInfo
 import dev.schlaubi.openid.helper.providers.Provider
 import dev.schlaubi.openid.helper.providers.providers
 import io.ktor.resources.Resource
@@ -33,6 +34,11 @@ data class ProviderRoute(val providerName: String) {
 
     @Resource("user")
     data class UserInfo(override val parent: ProviderRoute) : HasProvider {
+        constructor(name: String) : this(ProviderRoute(name))
+    }
+
+    @Resource("callback")
+    data class Callback(override val parent: ProviderRoute) : HasProvider {
         constructor(name: String) : this(ProviderRoute(name))
     }
 }

@@ -5,6 +5,7 @@ import dev.schlaubi.openid.helper.providers.implementations.lastfm
 import dev.schlaubi.openid.helper.providers.implementations.mastodon.loadClients
 import dev.schlaubi.openid.helper.providers.implementations.mastodon.mastodon
 import dev.schlaubi.openid.helper.providers.providers
+import dev.schlaubi.openid.helper.util.provider
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
@@ -16,6 +17,7 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.resources.Resources
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.param
 import io.ktor.server.routing.routing
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -45,7 +47,9 @@ fun main() {
         routing {
             oauthRoutes()
             providers.forEach { (_, provider) ->
-                provider.additionalRoutes?.invoke(this)
+                provider(provider.name) {
+                    provider.additionalRoutes?.invoke(this)
+                }
             }
         }
     }
