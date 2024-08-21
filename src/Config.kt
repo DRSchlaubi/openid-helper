@@ -29,6 +29,8 @@ object Config : EnvironmentConfig() {
     val MASTODON_CLIENT_SECRET by getEnv("werdasliestkannlesen")
     val MASTODON_REDIRECT_URI by this
     val BUNGE_API_KEY by this
+    val FLICKR_CONSUMER_KEY by this
+    val FLICKR_CONSUMER_SECRET by this
 }
 
 @OptIn(ExperimentalContracts::class)

@@ -2,9 +2,12 @@ package dev.schlaubi.openid.helper.providers
 
 import dev.schlaubi.openid.helper.providers.implementations.*
 import dev.schlaubi.openid.helper.providers.implementations.mastodon.mastodon
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+
+private val LOG = KotlinLogging.logger { }
 
 typealias ProviderRegistry = MutableMap<String, Provider>
 
@@ -43,6 +46,11 @@ val providers = buildMap {
     bbn()
     lastfm()
     paypal()
+    try {
+        flickr()
+    } catch (e: IllegalStateException) {
+        LOG.warn(e) { "Could not register Flickr provider" }
+    }
 }
 
 @OptIn(ExperimentalContracts::class)
