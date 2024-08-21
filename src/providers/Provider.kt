@@ -20,6 +20,7 @@ import io.ktor.server.routing.Route
 import io.ktor.util.reflect.TypeInfo
 import io.ktor.util.reflect.typeInfo
 import io.ktor.utils.io.ByteReadChannel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
@@ -29,6 +30,8 @@ typealias URLUpdater = suspend URLBuilder.(ApplicationCall) -> Unit
 
 typealias RouteBuilder = Route.() -> Unit
 
+typealias Coroutine = suspend CoroutineScope.() -> Unit
+
 data class Provider(
     val name: String,
     val authorize: URLUpdater,
@@ -37,6 +40,7 @@ data class Provider(
     val userEndpoint: RouteInterceptor,
     val jwksEndpoint: String? = null,
     val additionalRoutes: RouteBuilder? = null,
+    val register: Coroutine? = null
 ) {
     data class RouteInterceptor(
         val request: Interceptor<*>,

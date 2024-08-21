@@ -28,9 +28,14 @@ class ProviderBuilder(private val name: String) {
     private var token: RouteInterceptor = RouteInterceptor.Forward
     private var userEndpoint: RouteInterceptor = RouteInterceptor.Forward
     private var additionalRoutes: RouteBuilder? = null
+    private var onStartup: Coroutine? = null
 
     var jwksEndpoint: String? = null
     var useOauth1a: Boolean = false
+
+    fun onStartup(block: Coroutine) {
+        onStartup = block
+    }
 
     fun authorize(block: URLUpdater) {
         authorize = block

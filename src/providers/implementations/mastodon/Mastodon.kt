@@ -27,6 +27,7 @@ fun ApplicationCall.verifyOauth() {
 }
 
 fun ProviderRegistry.mastodon() = registerProvider("mastodon") {
+    onStartup { loadClients() }
     authorize {
         val clientId = it.parameters["client_id"]!!
         val scope = it.parameters["scope"]!!

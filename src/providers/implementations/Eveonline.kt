@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import dev.schlaubi.openid.helper.ProviderRoute
 import dev.schlaubi.openid.helper.providers.ProviderRegistry
 import dev.schlaubi.openid.helper.providers.registerProvider
+import dev.schlaubi.openid.helper.util.blocking
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.server.application.call
 import io.ktor.server.auth.parseAuthorizationHeader
@@ -18,11 +19,14 @@ import java.net.URI
 import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
 
-private val jwks = JwkProviderBuilder(URI.create("https://login.eveonline.com/oauth/jwks").toURL())
-    .cached(true)
-    .build()
 
-fun ProviderRegistry.eveonline() = registerProvider("eveonline") {
+suspend fun ProviderRegistry.eveonline() = registerProvider("eveonline") {
+    val jwks = blocking {
+        JwkProviderBuilder(URI.create("https://login.eveonline.com/oauth/jwks").toURL())
+            .cached(true)
+            .build()
+    }
+
     authorize("https://login.eveonline.com/v2/oauth/authorize")
     token("https://login.eveonline.com/v2/oauth/token")
 
@@ -33,7 +37,7 @@ fun ProviderRegistry.eveonline() = registerProvider("eveonline") {
 
             val jwt = JWT.decode(token)
             val keyId = jwt.keyId
-            val key = jwks.get(keyId)
+            val key = blocking { jwks.get(keyId) }
 
             val algorithm = when (key.algorithm) {
                 "RS256" -> Algorithm.RSA256(key.publicKey as RSAPublicKey)

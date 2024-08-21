@@ -3,6 +3,7 @@ package dev.schlaubi.openid.helper.providers
 import dev.schlaubi.openid.helper.providers.implementations.*
 import dev.schlaubi.openid.helper.providers.implementations.mastodon.mastodon
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.coroutineScope
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -11,7 +12,7 @@ private val LOG = KotlinLogging.logger { }
 
 typealias ProviderRegistry = MutableMap<String, Provider>
 
-val providers = buildMap {
+suspend fun providers() = buildMap {
     epicGames()
     amazon()
     eBay()
@@ -53,10 +54,14 @@ val providers = buildMap {
     } catch (e: IllegalStateException) {
         LOG.warn(e) { "Could not register Flickr provider" }
     }
+}.onEach { (_, provider) ->
+    coroutineScope {
+        provider.register?.invoke(this)
+    }
 }
 
 @OptIn(ExperimentalContracts::class)
-fun ProviderRegistry.registerProvider(name: String, builder: ProviderBuilder.() -> Unit) {
+inline fun ProviderRegistry.registerProvider(name: String, builder: ProviderBuilder.() -> Unit) {
     contract {
         callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
     }
