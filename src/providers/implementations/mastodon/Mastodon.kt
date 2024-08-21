@@ -29,13 +29,13 @@ fun ApplicationCall.verifyOauth() {
 fun ProviderRegistry.mastodon() = registerProvider("mastodon") {
     onStartup { loadClients() }
     authorize {
+        it.verifyOauth()
         val clientId = it.parameters["client_id"]!!
         val scope = it.parameters["scope"]!!
         val redirectUri = it.parameters["redirect_uri"]!!
-        val state = it.parameters["state"]!!
-        val responseType = it.parameters["response_type"]!!
+        val state = it.parameters["state"] ?: throw BadRequestException("Missing state")
+        val responseType = it.parameters["response_type"] ?: throw BadRequestException("Missing response type")
 
-        it.verifyOauth()
 
         parameters.clear()
         it.application.href(

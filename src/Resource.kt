@@ -53,12 +53,12 @@ class Mastodon {
         @SerialName("response_type") val responseType: String,
         @SerialName("is-invalid") val isInvalid: Boolean = false,
         val prefill: String? = null,
-        val parent: Mastodon = Mastodon()
+        val parent: ProviderRoute = ProviderRoute("mastodon")
     )
 
     @Resource("callback")
-    data class Callback(val code: String, val state: String, val parent: Mastodon = Mastodon())
+    data class Callback(val code: String, val state: String, val parent: ProviderRoute = ProviderRoute("mastodon"))
 
     @Resource("callback")
-    data class CallbackBase(val parent: Mastodon = Mastodon())
+    data class CallbackBase(val parent: ProviderRoute = ProviderRoute("mastodon"))
 }
