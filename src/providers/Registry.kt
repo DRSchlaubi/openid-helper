@@ -47,6 +47,7 @@ val providers = buildMap {
     lastfm()
     paypal()
     cloudConvert()
+    eveonline()
     try {
         flickr()
     } catch (e: IllegalStateException) {

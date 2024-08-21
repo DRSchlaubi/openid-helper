@@ -22,3 +22,4 @@ dependencies:
   - $libs.slf4j.simple
   - $libs.kotlin.logging
   - $libs.java.jwt
+  - $libs.java.jwks
