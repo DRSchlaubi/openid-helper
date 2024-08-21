@@ -1,6 +1,5 @@
 package dev.schlaubi.openid.helper
 
-import dev.schlaubi.openid.helper.ProviderRoute.UserInfo
 import dev.schlaubi.openid.helper.providers.Provider
 import dev.schlaubi.openid.helper.providers.providers
 import io.ktor.resources.Resource

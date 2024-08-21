@@ -12,6 +12,9 @@ private val LOG = KotlinLogging.logger { }
 
 typealias ProviderRegistry = MutableMap<String, Provider>
 
+internal var providers: Map<String, Provider> = mutableMapOf()
+    private set
+
 suspend fun providers() = buildMap {
     epicGames()
     amazon()
@@ -59,6 +62,7 @@ suspend fun providers() = buildMap {
         provider.register?.invoke(this)
     }
 }
+    .also { providers = it }
 
 @OptIn(ExperimentalContracts::class)
 inline fun ProviderRegistry.registerProvider(name: String, builder: ProviderBuilder.() -> Unit) {
