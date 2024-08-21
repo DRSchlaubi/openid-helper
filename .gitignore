@@ -56,5 +56,6 @@ gradle-app.setting
 
 .kotlin
 storage/
+test.http
 
 # End of https://www.toptal.com/developers/gitignore/api/kotlin,gradle

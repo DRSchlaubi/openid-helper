@@ -42,6 +42,7 @@ val providers = buildMap {
     bitly()
     bbn()
     lastfm()
+    paypal()
 }
 
 @OptIn(ExperimentalContracts::class)
