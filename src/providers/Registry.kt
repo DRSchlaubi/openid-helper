@@ -46,6 +46,7 @@ val providers = buildMap {
     bbn()
     lastfm()
     paypal()
+    cloudConvert()
     try {
         flickr()
     } catch (e: IllegalStateException) {
