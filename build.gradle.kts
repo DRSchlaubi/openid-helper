@@ -7,16 +7,16 @@ plugins {
 graalvmNative {
     toolchainDetection = true
     binaries {
-            named("main") {
-                javaLauncher = javaToolchains.launcherFor {
-                    vendor = JvmVendorSpec.GRAAL_VM
-                    languageVersion = JavaLanguageVersion.of(22)
-                }
-                imageName = "openid-helper"
-                mainClass = "dev.schlaubi.openid.helper.MainKt"
-                if(HostManager.hostIsLinux) {
-                    buildArgs = listOf("--static", "--libc=musl")
-                }
+        named("main") {
+            javaLauncher = javaToolchains.launcherFor {
+                vendor = JvmVendorSpec.GRAAL_VM
+                languageVersion = JavaLanguageVersion.of(22)
             }
+            imageName = "openid-helper"
+            mainClass = "dev.schlaubi.openid.helper.MainKt"
+            if (HostManager.hostIsLinux) {
+                buildArgs = listOf("--static", "--libc=musl", "--enable-url-protocols=https")
+            }
+        }
     }
 }
