@@ -14,12 +14,25 @@
     <form>
         <div class="mb-4">
             <label for="mastodon-host" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mastodon Host</label>
-            <input type="text" id="mastodon-host" name="host" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
+            <h6 hidden="hidden" id="error" class="text-red-800 dark:text-red-800">Invalid host</h6>
+            <input id=host-input" onchange="document.getElementById('error').hidden = true" type="text" id="mastodon-host" name="host" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
         </div>
         <div>
             <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Submit</button>
         </div>
     </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let params = new URLSearchParams(window.location.search)
+            if (params.get("is_invalid") === true) {
+                document.getElementById('error').hidden = false;
+            }
+            let prefill = params.get("prefill");
+            if (prefill) {
+                document.getElementById("host-input").value = prefill;
+            }
+        });
+    </script>
 </div>
 </body>
 </html>

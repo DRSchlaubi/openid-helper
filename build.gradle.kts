@@ -15,7 +15,12 @@ graalvmNative {
             imageName = "openid-helper"
             mainClass = "dev.schlaubi.openid.helper.MainKt"
             if (HostManager.hostIsLinux) {
-                buildArgs = listOf("--static", "--libc=musl", "--enable-url-protocols=https")
+                buildArgs = listOf("--static", "--libc=musl")
+            }
+            buildArgs("--enable-url-protocols=https")
+
+            resources {
+                includedPatterns.add("mastodon/select-host.html")
             }
         }
     }

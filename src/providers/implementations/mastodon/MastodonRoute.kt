@@ -7,6 +7,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.call.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.plugins.*
@@ -14,6 +15,8 @@ import io.ktor.server.request.*
 import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.Route
+import io.ktor.utils.io.*
+import io.ktor.utils.io.jvm.javaio.*
 import java.io.File
 import kotlin.collections.mutableMapOf
 import kotlin.collections.set
@@ -28,10 +31,12 @@ private val states = mutableMapOf<String, State>()
 fun Route.mastodon() {
     get<Mastodon.SelectHost> { route ->
         call.verifyOauth()
-        val (_, _, _, _, _, isInvalid, prefill) = route
 
-        val file = ClassLoader.getSystemResource("mastodon/select-host.html")
-        call.respondFile(File(file.toURI()))
+        val file = ClassLoader.getSystemResourceAsStream("mastodon/select-host.html")
+        call.respond(object : OutgoingContent.ReadChannelContent() {
+            override fun readFrom(): ByteReadChannel = file!!.toByteReadChannel()
+            override val contentType: ContentType= ContentType.Text.Html
+        })
     }
 
     post<Mastodon.SelectHost> {
