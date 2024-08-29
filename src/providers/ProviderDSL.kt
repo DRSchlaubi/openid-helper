@@ -23,7 +23,7 @@ import kotlin.contracts.contract
 annotation class ProviderDSL
 
 @ProviderDSL
-class ProviderBuilder(private val name: String) {
+class ProviderBuilder(val name: String) {
     private var authorize: URLUpdater = { }
     private var token: RouteInterceptor = RouteInterceptor.Forward
     private var userEndpoint: RouteInterceptor = RouteInterceptor.Forward

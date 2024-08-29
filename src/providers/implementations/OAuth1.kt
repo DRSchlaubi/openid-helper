@@ -61,8 +61,6 @@ private fun newAuthCode(
     withClaim("verifier", verifier)
 }
 
-private fun newAccessToken(issuer: String, token: String, tokenSecret: String) = newJWT(issuer, token, tokenSecret)
-
 private val verifier = JWT
     .require(Algorithm.HMAC256(Config.JWT_SECRET))
     .build()

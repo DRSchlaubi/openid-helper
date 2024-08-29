@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import dev.schlaubi.openid.helper.Config
 import dev.schlaubi.openid.helper.ProviderRoute
 import dev.schlaubi.openid.helper.buildUrl
+import dev.schlaubi.openid.helper.fullHref
 import dev.schlaubi.openid.helper.providers.ProviderRegistry
 import dev.schlaubi.openid.helper.providers.registerProvider
 import dev.schlaubi.openid.helper.util.md5
@@ -58,7 +59,7 @@ fun ProviderRegistry.lastfm() = registerProvider("lastfm") {
         parameters.apply {
             clear()
             append("api_key", clientId)
-            append("cb", Config.HOSTNAME.buildUrl { path("providers", "lastfm", "callback") })
+            append("cb", it.application.fullHref(ProviderRoute.Callback(name)))
         }
     }
 
