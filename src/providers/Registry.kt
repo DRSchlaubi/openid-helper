@@ -54,6 +54,7 @@ suspend fun providers() = buildMap {
     eveonline()
     klarna()
     gumroad()
+    guilded()
     try {
         flickr()
     } catch (e: IllegalStateException) {
