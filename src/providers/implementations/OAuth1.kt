@@ -90,7 +90,7 @@ fun ProviderRegistry.oauth1a(
             it.response.cookies.append(
                 "state",
                 state,
-                path = it.application.fullHref(ProviderRoute(config.name)),
+                path = "/",
                 expires = GMTDate() + 2.minutes
             )
 
