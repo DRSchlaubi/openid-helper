@@ -55,11 +55,8 @@ suspend fun providers() = buildMap {
     klarna()
     gumroad()
     guilded()
-    try {
-        flickr()
-    } catch (e: IllegalStateException) {
-        LOG.warn(e) { "Could not register Flickr provider" }
-    }
+    registerProviderCatching("Flickr", ::flickr)
+    registerProviderCatching("Discogs", ::discogs)
 }.onEach { (_, provider) ->
     coroutineScope {
         provider.register?.invoke(this)
@@ -74,4 +71,12 @@ inline fun ProviderRegistry.registerProvider(name: String, builder: ProviderBuil
     }
 
     this[name] = provider(name, builder)
+}
+
+private inline fun registerProviderCatching(name: String, register: () -> Unit) {
+    try {
+        register()
+    } catch (e: IllegalStateException) {
+        LOG.warn(e) { "Could not register provider $name" }
+    }
 }

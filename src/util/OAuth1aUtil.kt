@@ -42,10 +42,10 @@ suspend fun ApplicationCall.requestToken(
     )
 }
 
-fun ParametersBuilder.sign(baseUrl: String, secret: String, parameterName: String = HttpAuthHeader.Parameters.OAuthSignature) {
+fun ParametersBuilder.sign(baseUrl: String, secret: String, parameterName: String = HttpAuthHeader.Parameters.OAuthSignature, method: HttpMethod = HttpMethod.Post) {
     val signature = signatureBaseStringInternal(
         HttpAuthHeader.Parameterized("Oauth", emptyList()),
-        HttpMethod.Post,
+        method,
         baseUrl,
         entries().map { HeaderValueParam(it.key, it.value.first()) },
     ).hmacSha1(secret)

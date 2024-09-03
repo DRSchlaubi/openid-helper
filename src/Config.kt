@@ -31,6 +31,8 @@ object Config : EnvironmentConfig() {
     val BUNGE_API_KEY by this
     val FLICKR_CONSUMER_KEY by this
     val FLICKR_CONSUMER_SECRET by this
+    val DISCOGS_CONSUMER_KEY by this
+    val DISCOGS_CONSUMER_SECRET by this
 }
 
 @OptIn(ExperimentalContracts::class)
