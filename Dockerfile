@@ -1,8 +1,6 @@
-FROM alpine
+FROM --platform=$TARGETOS/$TARGETARCH eclipse-temurin:22-jre-alpine
 
 WORKDIR /usr/app
-COPY build/native/nativeCompile/openid-helper openid-helper
+COPY build/install/openid-helper .
 
-LABEL org.opencontainers.image.source="https://github.com/DRSchlaubi/openid-helper"
-
-ENTRYPOINT ["/usr/app/openid-helper"]
+ENTRYPOINT ["/usr/app/bin/openid-helper"]

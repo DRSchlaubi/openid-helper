@@ -22,12 +22,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - uses: graalvm/setup-graalvm@v1
+      - uses: actions/setup-java@v4
         with:
           java-version: '22'
-          distribution: 'graalvm-community'
-          native-image-musl: true
-      - uses: gradle/actions/setup-gradle@v3
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew nativeBuild
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v3
@@ -48,6 +47,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/arm64, linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

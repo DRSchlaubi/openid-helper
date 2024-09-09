@@ -23,6 +23,3 @@ kotlinx-io = { group = "org.jetbrains.kotlinx", name = "kotlinx-io-core", versio
 
 java-jwt = { group = "com.auth0", name = "java-jwt", version = "4.4.0" }
 java-jwks = { group = "com.auth0", name = "jwks-rsa", version = "0.22.1" }
-
-[plugins]
-graalvm = { id = "org.graalvm.buildtools.native", version = "0.10.2" }
