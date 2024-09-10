@@ -33,6 +33,7 @@ object Config : EnvironmentConfig() {
     val FLICKR_CONSUMER_SECRET by this
     val DISCOGS_CONSUMER_KEY by this
     val DISCOGS_CONSUMER_SECRET by this
+    val REDIS_URL by getEnv().optional()
 }
 
 @OptIn(ExperimentalContracts::class)

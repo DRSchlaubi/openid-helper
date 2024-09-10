@@ -1,5 +1,6 @@
 package dev.schlaubi.openid.helper.providers
 
+import dev.kord.cache.api.DataCache
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent
@@ -40,7 +41,7 @@ data class Provider(
     val userEndpoint: RouteInterceptor,
     val jwksEndpoint: String? = null,
     val additionalRoutes: RouteBuilder? = null,
-    val register: Coroutine? = null
+    val register: Coroutine? = null,
 ) {
     data class RouteInterceptor(
         val request: Interceptor<*>,

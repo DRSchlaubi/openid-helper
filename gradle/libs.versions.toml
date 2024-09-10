@@ -1,5 +1,6 @@
 [versions]
 ktor = "2.3.12"
+kord-cache = "0.5.4"
 
 [libraries]
 kotlinx-serialization-json-io = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json-io", version = "1.7.2" }
@@ -23,3 +24,7 @@ kotlinx-io = { group = "org.jetbrains.kotlinx", name = "kotlinx-io-core", versio
 
 java-jwt = { group = "com.auth0", name = "java-jwt", version = "4.4.0" }
 java-jwks = { group = "com.auth0", name = "jwks-rsa", version = "0.22.1" }
+
+kord-cache-api = { group = "dev.kord.cache", name = "cache-api", version.ref = "kord-cache" }
+kord-cache-map = { group = "dev.kord.cache", name = "cache-map", version.ref = "kord-cache" }
+kord-cache-redis = { group = "dev.kord.cache", name = "cache-redis", version.ref = "kord-cache" }

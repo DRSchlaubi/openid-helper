@@ -2,35 +2,37 @@ package dev.schlaubi.openid.helper.providers.implementations
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import dev.kord.cache.api.put
 import dev.schlaubi.openid.helper.Config
 import dev.schlaubi.openid.helper.ProviderRoute
-import dev.schlaubi.openid.helper.buildUrl
 import dev.schlaubi.openid.helper.fullHref
 import dev.schlaubi.openid.helper.providers.ProviderRegistry
 import dev.schlaubi.openid.helper.providers.registerProvider
+import dev.schlaubi.openid.helper.util.State
+import dev.schlaubi.openid.helper.util.cache
+import dev.schlaubi.openid.helper.util.findAndRemoveState
 import dev.schlaubi.openid.helper.util.md5
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.statement.request
 import io.ktor.http.ParametersBuilder
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.http.encodeURLParameter
-import io.ktor.http.path
 import io.ktor.http.takeFrom
 import io.ktor.server.application.call
 import io.ktor.server.auth.parseAuthorizationHeader
 import io.ktor.server.plugins.BadRequestException
-import io.ktor.server.response.respondRedirect
 import io.ktor.server.resources.get
+import io.ktor.server.response.respondRedirect
 import io.ktor.util.date.GMTDate
 import io.ktor.util.date.plus
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlin.time.Duration.Companion.minutes
 
-private data class Sate(val redirectUrl: String)
-
-private val states = mutableMapOf<String, Sate>()
+@Serializable
+private data class LastfmState(override val id: String, val redirectUrl: String) : State
 
 private fun newKey(sub: String, apiKey: String) = JWT
     .create()
@@ -51,7 +53,7 @@ fun ProviderRegistry.lastfm() = registerProvider("lastfm") {
         val state = it.parameters["state"] ?: throw BadRequestException("State is missing")
         val redirectUri = it.parameters["redirect_uri"] ?: throw BadRequestException("Redirect uri is missing")
         val clientId = it.parameters["client_id"] ?: throw BadRequestException("Client id is missing")
-        states[state] = Sate(redirectUri)
+        cache.put(LastfmState(state, redirectUri))
 
         it.response.cookies.append("state", state, path = "/providers/lastfm", expires = GMTDate() + 2.minutes)
 
@@ -123,7 +125,7 @@ fun ProviderRegistry.lastfm() = registerProvider("lastfm") {
     routing {
         get<ProviderRoute.Callback> {
             val stateName = call.request.cookies["state"]
-            val state = states[stateName] ?: throw BadRequestException("State is missing")
+            val state = findAndRemoveState<LastfmState>(stateName) ?: throw BadRequestException("State is missing")
             val token = call.parameters["token"] ?: throw BadRequestException("Token is missing")
 
             call.respondRedirect {

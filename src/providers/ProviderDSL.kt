@@ -75,7 +75,7 @@ class ProviderBuilder(val name: String) {
         additionalRoutes = block
     }
 
-    fun build(): Provider = Provider(name, authorize, useOauth1a, token, userEndpoint, jwksEndpoint, additionalRoutes)
+    fun build(): Provider = Provider(name, authorize, useOauth1a, token, userEndpoint, jwksEndpoint, additionalRoutes, onStartup)
 }
 
 @ProviderDSL

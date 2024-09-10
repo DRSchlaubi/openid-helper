@@ -1,15 +1,18 @@
 package dev.schlaubi.openid.helper.providers.implementations.mastodon
 
+import dev.kord.cache.api.put
 import dev.schlaubi.openid.helper.Config
 import dev.schlaubi.openid.helper.Mastodon
 import dev.schlaubi.openid.helper.fullHref
+import dev.schlaubi.openid.helper.util.State
+import dev.schlaubi.openid.helper.util.cache
+import dev.schlaubi.openid.helper.util.findAndRemoveState
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.call.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
-import io.ktor.server.http.content.*
 import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.resources.*
@@ -17,25 +20,27 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.Route
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
-import java.io.File
-import kotlin.collections.mutableMapOf
-import kotlin.collections.set
+import kotlinx.serialization.Serializable
 
 
 private val LOG = KotlinLogging.logger { }
 
-private data class State(val app: MastodonOAuthApplication, val redirect: String, val url: String)
-
-private val states = mutableMapOf<String, State>()
+@Serializable
+data class MastodonState(
+    override val id: String,
+    val app: MastodonOAuthApplication,
+    val redirect: String,
+    val url: String
+) : State
 
 fun Route.mastodon() {
-    get<Mastodon.SelectHost> { route ->
+    get<Mastodon.SelectHost> {
         call.verifyOauth()
 
         val file = ClassLoader.getSystemResourceAsStream("mastodon/select-host.html")
         call.respond(object : OutgoingContent.ReadChannelContent() {
             override fun readFrom(): ByteReadChannel = file!!.toByteReadChannel()
-            override val contentType: ContentType= ContentType.Text.Html
+            override val contentType: ContentType = ContentType.Text.Html
         })
     }
 
@@ -74,7 +79,7 @@ fun Route.mastodon() {
             }
         }
 
-        states[it.state] = State(client, it.redirectUri, url.toString())
+        cache.put(MastodonState(it.state, client, it.redirectUri, url.toString()))
 
         val redirectUri = call.application.fullHref(Mastodon.CallbackBase())
 
@@ -90,7 +95,7 @@ fun Route.mastodon() {
     }
 
     get<Mastodon.Callback> { (code, state) ->
-        val foundState = states.remove(state) ?: throw BadRequestException("Missing state")
+        val foundState = findAndRemoveState<MastodonState>(state) ?: throw BadRequestException("Missing state")
         val authCode = newMappedToken(foundState.url, code)
         call.respondRedirect {
             takeFrom(foundState.redirect)

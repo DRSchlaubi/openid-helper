@@ -24,3 +24,6 @@ dependencies:
   - $libs.kotlin.logging
   - $libs.java.jwt
   - $libs.java.jwks
+  - $libs.kord.cache.api
+  - $libs.kord.cache.map
+  - $libs.kord.cache.redis

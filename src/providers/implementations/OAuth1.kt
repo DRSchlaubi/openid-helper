@@ -3,6 +3,7 @@ package dev.schlaubi.openid.helper.providers.implementations
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.algorithms.Algorithm
+import dev.kord.cache.api.put
 import dev.schlaubi.openid.helper.Config
 import dev.schlaubi.openid.helper.ProviderRoute
 import dev.schlaubi.openid.helper.fullHref
@@ -28,17 +29,20 @@ import io.ktor.util.date.GMTDate
 import io.ktor.util.date.plus
 import io.ktor.util.generateNonce
 import io.ktor.utils.io.readUTF8Line
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import java.time.Instant
 import kotlin.time.Duration.Companion.minutes
+import dev.schlaubi.openid.helper.util.State
+import dev.schlaubi.openid.helper.util.cache
+import dev.schlaubi.openid.helper.util.findAndRemoveState
 
 data class AccessToken(val token: String, val tokenSecret: String)
 
-private data class State(val token: String, val tokenSecret: String, val redirectUri: String)
-
-private val states = mutableMapOf<String, State>()
+@Serializable
+data class OAuth1State(override val id: String, val token: String, val tokenSecret: String, val redirectUri: String) : State
 
 private fun newJWT(
     issuer: String,
@@ -85,7 +89,7 @@ fun ProviderRegistry.oauth1a(
                 it.application.fullHref(ProviderRoute.Callback(config.name)),
                 state
             )
-            states[state] = State(token, tokenSecret, redirectUri)
+            cache.put(OAuth1State(state, token, tokenSecret, redirectUri))
 
             it.response.cookies.append(
                 "state",
@@ -150,7 +154,7 @@ fun ProviderRegistry.oauth1a(
         routing {
             get<ProviderRoute.Callback> {
                 val stateId = call.request.cookies["state"]
-                val state = states.remove(stateId) ?: throw BadRequestException("Missing state")
+                val state = findAndRemoveState<OAuth1State>(stateId) ?: throw BadRequestException("Missing state")
                 val oauthToken = call.parameters["oauth_token"] ?: throw BadRequestException("Missing oauth_token")
                 val oauthVerifier =
                     call.parameters["oauth_verifier"] ?: throw BadRequestException("Missing oauth_verifier")

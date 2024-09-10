@@ -5,6 +5,8 @@ import dev.schlaubi.openid.helper.Mastodon
 import dev.schlaubi.openid.helper.buildUrl
 import dev.schlaubi.openid.helper.providers.ProviderRegistry
 import dev.schlaubi.openid.helper.providers.registerProvider
+import dev.schlaubi.openid.helper.util.cache
+import dev.schlaubi.openid.helper.util.registerState
 import io.ktor.client.request.bearerAuth
 import io.ktor.http.ContentType
 import io.ktor.http.auth.HttpAuthHeader
@@ -27,7 +29,10 @@ fun ApplicationCall.verifyOauth() {
 }
 
 fun ProviderRegistry.mastodon() = registerProvider("mastodon") {
-    onStartup { loadClients() }
+    onStartup {
+        registerState<MastodonState>()
+        loadClients()
+    }
     authorize {
         it.verifyOauth()
         val clientId = it.parameters["client_id"]!!

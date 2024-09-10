@@ -2,12 +2,16 @@ package dev.schlaubi.openid.helper.providers.implementations
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import dev.kord.cache.api.put
 import dev.schlaubi.openid.helper.Config
 import dev.schlaubi.openid.helper.ProviderRoute
 import dev.schlaubi.openid.helper.fullHref
 import dev.schlaubi.openid.helper.providers.ProviderBuilder
 import dev.schlaubi.openid.helper.providers.ProviderRegistry
 import dev.schlaubi.openid.helper.providers.registerProvider
+import dev.schlaubi.openid.helper.util.State
+import dev.schlaubi.openid.helper.util.cache
+import dev.schlaubi.openid.helper.util.findAndRemoveState
 import io.ktor.http.takeFrom
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
@@ -15,13 +19,13 @@ import io.ktor.server.resources.get
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.util.url
 import io.ktor.util.generateNonce
+import kotlinx.serialization.Serializable
 import java.security.MessageDigest
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-private data class PKCEState(val verifier: String, val redirectUri: String)
-
-private val states = mutableMapOf<String, PKCEState>()
+@Serializable
+private data class PKCEState(override val id: String, val verifier: String, val redirectUri: String) : State
 
 private fun newKey(verifier: String, token: String) = JWT
     .create()
@@ -42,7 +46,8 @@ fun ProviderRegistry.oauth2PKCE(
         takeFrom(authorizeUrl)
         val verifier = Base64.UrlSafe.encode(generateNonce(32)).trimEnd('=')
         val redirectUri = parameters["redirect_uri"] ?: throw BadRequestException("Missing redirect_uri")
-        states[parameters["state"] ?: throw BadRequestException("Missing state")] = PKCEState(verifier, redirectUri)
+        val state = parameters["state"] ?: throw BadRequestException("Missing state")
+        cache.put(PKCEState(state, verifier, redirectUri))
         parameters.append("code_challenge", generateCodeChallenge(verifier))
         parameters.append("code_challenge_method", "S256")
         parameters["redirect_uri"] = it.application.fullHref(ProviderRoute.Callback(name))
@@ -70,7 +75,7 @@ fun ProviderRegistry.oauth2PKCE(
         get<ProviderRoute.Callback> {
             val state = call.parameters["state"] ?: throw BadRequestException("Missing state")
             val code = call.parameters["code"] ?: throw BadRequestException("Missing code")
-            val (verifier, redirectUri) = states.remove(state) ?: throw BadRequestException("Missing state")
+            val (_, verifier, redirectUri) = findAndRemoveState<PKCEState>(state) ?: throw BadRequestException("Missing state")
 
             val key = newKey(verifier, code)
 
