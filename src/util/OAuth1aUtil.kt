@@ -7,15 +7,15 @@ import io.ktor.http.HeaderValueParam
 import io.ktor.http.HttpMethod
 import io.ktor.http.ParametersBuilder
 import io.ktor.http.auth.HttpAuthHeader
-import io.ktor.http.encodeURLParameter
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.OAuthCallback
 import io.ktor.server.auth.OAuthServerSettings
 import io.ktor.server.auth.signatureBaseStringInternal
 import io.ktor.server.auth.simpleOAuth1aStep1
-import java.util.Base64
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 fun OAuthServerSettings.OAuth1aServerSettings.copy(
     consumerKey: String = this.consumerKey,
@@ -53,27 +53,11 @@ fun ParametersBuilder.sign(baseUrl: String, secret: String, parameterName: Strin
     set(parameterName, signature)
 }
 
+@OptIn(ExperimentalEncodingApi::class)
 private fun String.hmacSha1(key: String): String {
     val keySpec = SecretKeySpec(key.toByteArray(), "HmacSHA1")
     val mac = Mac.getInstance("HmacSHA1")
     mac.init(keySpec)
 
-    return Base64.getEncoder().encodeToString(mac.doFinal(this.toByteArray()))
+    return Base64.Default.encode(mac.doFinal(this.toByteArray()))
 }
-
-//private class DummyPipelineContext(
-//    call: ApplicationCall,
-//) : PipelineContext<Unit, ApplicationCall>(call) {
-//    override var subject = Unit
-//
-//    @Suppress("CANNOT_OVERRIDE_INVISIBLE_MEMBER")
-//    override suspend fun execute(initial: Unit) = throw UnsupportedOperationException()
-//
-//    override fun finish() = throw UnsupportedOperationException()
-//    override suspend fun proceed() = throw UnsupportedOperationException()
-//    override suspend fun proceedWith(subject: Unit) = throw UnsupportedOperationException()
-//
-//    override val coroutineContext: CoroutineContext
-//        get() = throw UnsupportedOperationException()
-//
-//}

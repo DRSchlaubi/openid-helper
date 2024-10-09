@@ -3,7 +3,7 @@ ktor = "2.3.12"
 kord-cache = "0.5.4"
 
 [libraries]
-kotlinx-serialization-json-io = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json-io", version = "1.7.2" }
+kotlinx-serialization-json-io = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json-io", version = "1.7.3" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor" }
 ktor-server-content-negotiation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
@@ -20,7 +20,7 @@ stdx-envconf = { group = "dev.schlaubi", name = "stdx-envconf", version = "1.3.0
 slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version = "2.0.16" }
 kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version = "7.0.0" }
 
-kotlinx-io = { group = "org.jetbrains.kotlinx", name = "kotlinx-io-core", version = "0.5.1" }
+kotlinx-io = { group = "org.jetbrains.kotlinx", name = "kotlinx-io-core", version = "0.5.4" }
 
 java-jwt = { group = "com.auth0", name = "java-jwt", version = "4.4.0" }
 java-jwks = { group = "com.auth0", name = "jwks-rsa", version = "0.22.1" }

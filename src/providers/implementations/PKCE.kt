@@ -12,6 +12,7 @@ import dev.schlaubi.openid.helper.providers.registerProvider
 import dev.schlaubi.openid.helper.util.State
 import dev.schlaubi.openid.helper.util.cache
 import dev.schlaubi.openid.helper.util.findAndRemoveState
+import dev.schlaubi.openid.helper.util.registerState
 import io.ktor.http.takeFrom
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
@@ -42,6 +43,10 @@ fun ProviderRegistry.oauth2PKCE(
     tokenUrl: String,
     additional: ProviderBuilder.() -> Unit = {}
 ) = registerProvider(name = name) {
+    onStartup {
+        registerState<PKCEState>()
+    }
+
     authorize {
         takeFrom(authorizeUrl)
         val verifier = Base64.UrlSafe.encode(generateNonce(32)).trimEnd('=')
@@ -100,5 +105,4 @@ private fun generateCodeChallenge(verifier: String): String {
         update(bytes)
     }
     return Base64.UrlSafe.encode(digest.digest()).trimEnd('=')
-//    return java.util.Base64.getEncoder().withoutPadding().encodeToString(digest.digest())
 }

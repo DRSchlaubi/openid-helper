@@ -12,6 +12,7 @@ import dev.schlaubi.openid.helper.util.State
 import dev.schlaubi.openid.helper.util.cache
 import dev.schlaubi.openid.helper.util.findAndRemoveState
 import dev.schlaubi.openid.helper.util.md5
+import dev.schlaubi.openid.helper.util.registerState
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.statement.request
 import io.ktor.http.ParametersBuilder
@@ -46,6 +47,9 @@ private val validator = JWT
 
 @OptIn(ExperimentalStdlibApi::class)
 fun ProviderRegistry.lastfm() = registerProvider("lastfm") {
+    onStartup {
+        registerState<LastfmState>()
+    }
     authorize {
         if (it.parameters["response_type"] != "code") {
             throw BadRequestException("Response type must be code")

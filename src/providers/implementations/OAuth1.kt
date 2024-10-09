@@ -38,6 +38,7 @@ import kotlin.time.Duration.Companion.minutes
 import dev.schlaubi.openid.helper.util.State
 import dev.schlaubi.openid.helper.util.cache
 import dev.schlaubi.openid.helper.util.findAndRemoveState
+import dev.schlaubi.openid.helper.util.registerState
 
 data class AccessToken(val token: String, val tokenSecret: String)
 
@@ -75,6 +76,10 @@ fun ProviderRegistry.oauth1a(
     additional: ProviderBuilder.(OAuthServerSettings.OAuth1aServerSettings) -> Unit = {}
 ) =
     registerProvider(config.name) {
+        onStartup {
+            registerState<OAuth1State>()
+        }
+
         authorize {
             takeFrom(config.authorizeUrl)
 
