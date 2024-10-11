@@ -33,7 +33,7 @@ import kotlinx.serialization.json.put
 import kotlin.time.Duration.Companion.minutes
 
 @Serializable
-private data class LastfmState(override val id: String, val redirectUrl: String) : State
+data class LastfmState(override val id: String, val redirectUrl: String) : State
 
 private fun newKey(sub: String, apiKey: String) = JWT
     .create()

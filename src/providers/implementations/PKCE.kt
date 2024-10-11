@@ -26,7 +26,7 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 @Serializable
-private data class PKCEState(override val id: String, val verifier: String, val redirectUri: String) : State
+data class PKCEState(override val id: String, val verifier: String, val redirectUri: String) : State
 
 private fun newKey(verifier: String, token: String) = JWT
     .create()
