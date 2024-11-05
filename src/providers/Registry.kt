@@ -55,6 +55,9 @@ suspend fun providers() = buildMap {
     klarna()
     gumroad()
     guilded()
+    ubuntu()
+    openSUSE()
+    fedora()
     registerProviderCatching("Flickr", ::flickr)
     registerProviderCatching("Discogs", ::discogs)
 }.onEach { (_, provider) ->

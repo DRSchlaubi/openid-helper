@@ -50,6 +50,7 @@ val cache = DelegatingDataCache {
 }
 
 suspend inline fun <reified T : State> findAndRemoveState(id: String?): T? {
+    if (id == null) return null
     val query = cache.query<T> {
         T::class.idProperty eq id
     }

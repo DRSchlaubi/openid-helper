@@ -2,8 +2,8 @@ package dev.schlaubi.openid.helper
 
 import dev.schlaubi.openid.helper.providers.Provider
 import dev.schlaubi.openid.helper.providers.providers
-import io.ktor.resources.Resource
-import io.ktor.server.plugins.NotFoundException
+import io.ktor.resources.*
+import io.ktor.server.plugins.*
 import kotlinx.serialization.SerialName
 
 interface HasProvider {
@@ -38,6 +38,12 @@ data class ProviderRoute(val providerName: String) {
 
     @Resource("callback")
     data class Callback(override val parent: ProviderRoute) : HasProvider {
+        constructor(name: String) : this(ProviderRoute(name))
+    }
+
+
+    @Resource("initiate-openid")
+    data class InitiateOpenid(override val parent: ProviderRoute) : HasProvider {
         constructor(name: String) : this(ProviderRoute(name))
     }
 }
