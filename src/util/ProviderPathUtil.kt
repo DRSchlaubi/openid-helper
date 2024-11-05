@@ -4,10 +4,10 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.RouteSelector
 import io.ktor.server.routing.RouteSelectorEvaluation
 import io.ktor.server.routing.RoutingResolveContext
-import io.ktor.util.KtorDsl
+import io.ktor.utils.io.*
 
 data class ProviderRouteSelector(val name: String) : RouteSelector() {
-    override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
+    override suspend fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
         if (context.segments.take(2) == listOf("providers", name)) {
             return RouteSelectorEvaluation.Constant
         }

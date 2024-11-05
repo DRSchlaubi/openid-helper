@@ -3,7 +3,7 @@ package dev.schlaubi.openid.helper.providers.implementations
 import dev.schlaubi.openid.helper.providers.ProviderRegistry
 import dev.schlaubi.openid.helper.providers.registerProvider
 import io.ktor.http.*
-import io.ktor.util.*
+import io.ktor.utils.io.*
 import kotlinx.serialization.json.*
 
 fun ProviderRegistry.stackExchange() = registerProvider("stackexchange") {
