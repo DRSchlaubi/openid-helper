@@ -132,7 +132,7 @@ private fun Route.blueskyOAuth() {
         val code = parameters["code"] ?: throw BadRequestException("Missing code")
         if (parameters["grant_type"] != "authorization_code") throw BadRequestException("Missing grant_type")
         if (parameters["client_id"] != Config.BLUESKY_CLIENT_ID) throw BadRequestException("Invalid client_id")
-        if (parameters["client_secret"] != Config.BLUESKY_CLIENT_ID) throw BadRequestException("Invalid client_secret")
+        if (parameters["client_secret"] != Config.BLUESKY_CLIENT_SECRET) throw BadRequestException("Invalid client_secret")
 
         val authCode = authCodeVerifier.verify(code)
 
