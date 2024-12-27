@@ -8,7 +8,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.selects.select
 
 class InvalidHandleException(message: String? = null) : RuntimeException(message ?: "Could not validate handle")
 
@@ -48,34 +47,28 @@ suspend fun resolveDomainName(domainName: String) = coroutineScope {
         if (response.status.isSuccess()) {
             response.bodyAsText() // DID from HTTP
         } else {
-            throw ResponseException(response, "HTTP request failed")
+            null
         }
     }
 
     val dnsLookup = async {
         val record = "_atproto.${safeUrl.host}"
-        val value = dnsClient.lookUp(record, "TXT")
-        value.data.firstOrNull()?.removeSurrounding("\"")
-            ?.parseUrlEncodedParameters()?.get("did")
-            ?: throw InvalidHandleException()
+        runCatching {
+            val value = dnsClient.lookUp(record, "TXT")
+            value.data.firstOrNull()?.removeSurrounding("\"")
+                ?.parseUrlEncodedParameters()?.get("did")
+        }.getOrNull()
     }
 
-    val did = try {
-        select<String?> {
-            httpRequest.onAwait { result ->
-                dnsLookup.cancel()
-                result
-            }
-            dnsLookup.onAwait { result ->
-                httpRequest.cancel()
-                result
-            }
-        }
+    val did = runCatching { dnsLookup.await() }
+        .getOrNull() ?: runCatching { httpRequest.await() }.getOrNull()
+
+    try {
+        did?.let { resolveDid(it, domainName) }
+            ?: LoginInformation(resolveOAuthServer(safeUrl.toString()))
     } catch (e: Exception) {
-        null // Both tasks failed
+        throw InvalidHandleException(e.message)
     }
-
-    did?.let { resolveDid(it) } ?: LoginInformation(resolveOAuthServer(safeUrl.toString()))
 }
 
 suspend fun resolveDid(did: String, hint: String? = null): LoginInformation = try {
