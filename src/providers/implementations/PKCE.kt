@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalEncodingApi::class)
+
 package dev.schlaubi.openid.helper.providers.implementations
 
 import com.auth0.jwt.JWT
@@ -13,13 +15,12 @@ import dev.schlaubi.openid.helper.util.State
 import dev.schlaubi.openid.helper.util.cache
 import dev.schlaubi.openid.helper.util.findAndRemoveState
 import dev.schlaubi.openid.helper.util.registerState
-import io.ktor.http.takeFrom
-import io.ktor.server.application.call
-import io.ktor.server.plugins.BadRequestException
-import io.ktor.server.resources.get
-import io.ktor.server.response.respondRedirect
-import io.ktor.server.util.url
-import io.ktor.util.generateNonce
+import io.ktor.http.*
+import io.ktor.server.plugins.*
+import io.ktor.server.resources.*
+import io.ktor.server.response.*
+import io.ktor.server.util.*
+import io.ktor.util.*
 import kotlinx.serialization.Serializable
 import java.security.MessageDigest
 import kotlin.io.encoding.Base64
@@ -36,7 +37,6 @@ private fun newKey(verifier: String, token: String) = JWT
 
 private val verifier = JWT.require(Algorithm.HMAC256(Config.JWT_SECRET)).build()
 
-@OptIn(ExperimentalEncodingApi::class)
 fun ProviderRegistry.oauth2PKCE(
     name: String,
     authorizeUrl: String,
@@ -49,7 +49,7 @@ fun ProviderRegistry.oauth2PKCE(
 
     authorize {
         takeFrom(authorizeUrl)
-        val verifier = Base64.UrlSafe.encode(generateNonce(32)).trimEnd('=')
+        val verifier = generateVerifier()
         val redirectUri = parameters["redirect_uri"] ?: throw BadRequestException("Missing redirect_uri")
         val state = parameters["state"] ?: throw BadRequestException("Missing state")
         cache.put(PKCEState(state, verifier, redirectUri))
@@ -98,8 +98,9 @@ fun ProviderRegistry.oauth2PKCE(
     additional()
 }
 
-@OptIn(ExperimentalEncodingApi::class)
-private fun generateCodeChallenge(verifier: String): String {
+fun generateVerifier() = Base64.UrlSafe.encode(generateNonce(32)).trimEnd('=')
+
+fun generateCodeChallenge(verifier: String): String {
     val bytes = verifier.toByteArray(Charsets.US_ASCII)
     val digest = MessageDigest.getInstance("SHA-256").apply {
         update(bytes)

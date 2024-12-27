@@ -2,6 +2,7 @@ package dev.schlaubi.openid.helper.providers
 
 import dev.schlaubi.openid.helper.providers.implementations.*
 import dev.schlaubi.openid.helper.providers.implementations.mastodon.mastodon
+import dev.schlaubi.openid.helper.providers.implementations.bluesky.bluesky
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.coroutineScope
 import kotlin.contracts.ExperimentalContracts
@@ -60,6 +61,7 @@ suspend fun providers() = buildMap {
     fedora()
     registerProviderCatching("Flickr", ::flickr)
     registerProviderCatching("Discogs", ::discogs)
+    registerProviderCatching("Bluesky", ::bluesky)
 }.onEach { (_, provider) ->
     coroutineScope {
         provider.register?.invoke(this)

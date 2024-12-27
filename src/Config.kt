@@ -1,14 +1,22 @@
 package dev.schlaubi.openid.helper
 
-import io.ktor.http.URLBuilder
-import io.ktor.http.Url
-import io.ktor.resources.href
-import io.ktor.resources.serialization.ResourcesFormat
-import io.ktor.server.application.Application
-import io.ktor.server.resources.href
+import io.ktor.http.*
+import io.ktor.resources.*
+import io.ktor.resources.serialization.*
+import io.ktor.server.application.*
+import io.ktor.server.resources.*
+import org.bouncycastle.openssl.PEMKeyPair
+import org.bouncycastle.openssl.PEMParser
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
+import java.io.ByteArrayInputStream
+import java.io.InputStreamReader
+import java.security.interfaces.ECPrivateKey
+import java.security.interfaces.ECPublicKey
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import dev.schlaubi.envconf.Config as EnvironmentConfig
 
 enum class AmazonRegion(val tokenUrl: String) {
@@ -34,6 +42,27 @@ object Config : EnvironmentConfig() {
     val DISCOGS_CONSUMER_KEY by this
     val DISCOGS_CONSUMER_SECRET by this
     val REDIS_URL by getEnv().optional()
+
+    @OptIn(ExperimentalEncodingApi::class)
+    private val DPOP_SIGNING_KEY by getEnv {
+        val pem = PEMParser(InputStreamReader(ByteArrayInputStream(Base64.decode(it))))
+            .use(PEMParser::readObject) as PEMKeyPair
+
+        JcaPEMKeyConverter().getKeyPair(pem)
+    }
+
+    val PUBLIC_DPOP_SIGNING_KEY get() = DPOP_SIGNING_KEY.public as ECPublicKey
+    val PRIVATE_DPOP_SIGNING_KEY get() = DPOP_SIGNING_KEY.private as ECPrivateKey
+
+    val BLUESKY_CLIENT_ID by this
+    val BLUESKY_CLIENT_SECRET by this
+    val BLUESKY_REDIRECT_URIS by getEnv { it.split(",\\s*".toRegex()) }
+
+    val BLUESKY_CLIENT_NAME by getEnv().optional()
+    val BLUESKY_CLIENT_URI by getEnv().optional()
+    val BLUESKY_LOGO_URI by getEnv().optional()
+    val BLUESKY_TOS_URI by getEnv().optional()
+    val BLUESKY_PRIVACY_POLICY_URI by getEnv().optional()
 }
 
 @OptIn(ExperimentalContracts::class)

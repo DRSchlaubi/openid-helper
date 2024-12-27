@@ -3,47 +3,45 @@ package dev.schlaubi.openid.helper
 import dev.schlaubi.openid.helper.models.OpenIDManifest
 import dev.schlaubi.openid.helper.providers.Provider
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.compression.ContentEncoding
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.request
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsChannel
-import io.ktor.client.statement.request
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.contentLength
-import io.ktor.http.contentType
-import io.ktor.http.isSuccess
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.call
-import io.ktor.server.resources.get
-import io.ktor.server.resources.handle
-import io.ktor.server.resources.resource
-import io.ktor.server.response.header
-import io.ktor.server.response.respond
-import io.ktor.server.response.respondRedirect
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.method
-import io.ktor.server.util.url
-import io.ktor.util.filter
+import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.compression.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
+import io.ktor.server.resources.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import io.ktor.server.util.*
+import io.ktor.util.*
+import kotlinx.serialization.json.Json
+import tech.relaycorp.doh.DoHClient
 
 val LOG = KotlinLogging.logger { }
 val PROXY_HEADERS =
     listOf(HttpHeaders.Host, HttpHeaders.XForwardedFor, HttpHeaders.XForwardedProto, HttpHeaders.XForwardedHost)
 
+private val json = Json {
+    ignoreUnknownKeys = true
+}
+
 val httpClient = HttpClient(OkHttp) {
     install(ContentNegotiation) {
-        json()
+        json(json)
     }
     install(ContentEncoding) {
         gzip()
     }
+
+    install(HttpRequestRetry) {
+        maxRetries = 0
+    }
 }
+val dnsClient = DoHClient()
 
 fun Route.oauthRoutes() {
     get<ProviderRoute.OpenIDConfiguration> {

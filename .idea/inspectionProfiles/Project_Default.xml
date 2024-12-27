@@ -5,6 +5,7 @@
       <option name="customHeaders">
         <set>
           <option value="X-Plex-Token" />
+          <option value="DPoP-Nonce" />
         </set>
       </option>
     </inspection_tool>

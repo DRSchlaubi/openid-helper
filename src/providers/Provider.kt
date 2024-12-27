@@ -1,26 +1,16 @@
 package dev.schlaubi.openid.helper.providers
 
-import dev.kord.cache.api.DataCache
-import io.ktor.client.call.body
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.forms.FormDataContent
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsChannel
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.Parameters
-import io.ktor.http.ParametersBuilder
-import io.ktor.http.URLBuilder
-import io.ktor.http.content.OutgoingContent
-import io.ktor.http.contentType
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.request.receive
-import io.ktor.server.request.receiveChannel
-import io.ktor.server.request.receiveParameters
-import io.ktor.server.routing.Route
-import io.ktor.util.reflect.TypeInfo
-import io.ktor.util.reflect.typeInfo
-import io.ktor.utils.io.ByteReadChannel
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.routing.*
+import io.ktor.util.reflect.*
+import io.ktor.utils.io.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -140,7 +130,7 @@ data class Provider(
     }
 
     data class JsonInterceptor(
-        private val requestBuilder: JsonObjectBuilder.(JsonObject, ApplicationCall, HttpRequestBuilder) -> Unit,
+        private val requestBuilder: suspend JsonObjectBuilder.(JsonObject, ApplicationCall, HttpRequestBuilder) -> Unit,
         private val responseBuilder: suspend JsonObjectBuilder.(JsonObject, HttpResponse) -> Unit,
         override val urlUpdater: URLUpdater,
     ) : Interceptor<JsonObject> {

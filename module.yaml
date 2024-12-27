@@ -3,6 +3,7 @@ product: jvm/app
 settings:
   kotlin:
     serialization: json
+
   jvm:
     release: 22
 
@@ -23,7 +24,13 @@ dependencies:
   - $libs.slf4j.simple
   - $libs.kotlin.logging
   - $libs.java.jwt
-  - $libs.java.jwks
+  - $libs.nimbus.jwt
+  - $libs.bouncycastle.bcpkix.jdk18on
   - $libs.kord.cache.api
   - $libs.kord.cache.map
   - $libs.kord.cache.redis
+  - $libs.doh
+test-dependencies:
+  - $libs.kotlin.test.junit5
+  - $libs.kotlinx.coroutines.test
+  - $libs.junit.engine

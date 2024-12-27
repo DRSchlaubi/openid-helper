@@ -122,7 +122,7 @@ class RequestInterceptorBuilder : InterceptorBuilder() {
     data class RequestContext<T>(val data: T, val call: ApplicationCall, val request: HttpRequestBuilder)
 
     fun json(
-        builder: JsonObjectBuilder.(RequestContext<JsonObject>) -> Unit
+        builder: suspend JsonObjectBuilder.(RequestContext<JsonObject>) -> Unit
     ) {
         interceptor = Provider.JsonInterceptor({ data, call, request ->
             builder(RequestContext(data, call, request))
