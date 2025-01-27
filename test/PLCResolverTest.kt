@@ -13,7 +13,7 @@ class PLCResolverTest {
     fun testTxtDomainResolve() = runTest {
         val (server, _, hint) = resolveDomainName("schlau.bi")
 
-        assertEquals("https://am.schlau.bi", server.issuer)
+        assertEquals("https://am.schlau.bi", server.resource)
         assertEquals("schlau.bi", hint)
     }
 
@@ -24,7 +24,7 @@ class PLCResolverTest {
     fun testPDSResolve() = runTest {
         val (server, _, hint) = resolveDomainName("am.schlau.bi")
 
-        assertEquals("https://am.schlau.bi", server.issuer)
+        assertEquals("https://am.schlau.bi", server.resource)
         assertNull(hint)
     }
 
@@ -32,7 +32,8 @@ class PLCResolverTest {
     fun testHttpDomainResolve() = runTest {
         val (server, _, hint) = resolveDomainName("jaz.bsky.social")
 
-        assertEquals("https://bsky.social", server.issuer)
+        assertEquals("https://morel.us-east.host.bsky.network", server.resource)
+        assertEquals("https://bsky.social", server.server.issuer)
         assertEquals("jaz.bsky.social", hint)
     }
 
@@ -40,7 +41,9 @@ class PLCResolverTest {
     fun testResolveDid() = runTest {
         val (server, _, hint) = resolveDid("did:plc:ewvi7nxzyoun6zhxrhs64oiz")
 
-        assertEquals("https://bsky.social", server.issuer)
+
+        assertEquals("https://enoki.us-east.host.bsky.network", server.resource)
+        assertEquals("https://bsky.social", server.server.issuer)
         assertNull(hint)
     }
 
@@ -48,7 +51,8 @@ class PLCResolverTest {
     fun testResolveDidWeb() = runTest {
         val (server, _, hint) = resolveDid("did:web:krasovs.ky")
 
-        assertEquals("https://pds.krasovs.ky", server.issuer)
+        assertEquals("https://pds.krasovs.ky", server.resource)
+        assertEquals("https://pds.krasovs.ky", server.server.issuer)
         assertNull(hint)
     }
 

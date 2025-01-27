@@ -44,7 +44,7 @@ data class PARAuthData(
     val requestUri: String,
     val dPoPNonce: String,
     val pkceVerifier: String,
-    val authorizationServer: OAuthAuthorizationServer,
+    val authorizationServer: AuthorizationServerInfo,
     val ecKey: SerializableECKey,
     val redirectUri: String
 ) : State
@@ -76,10 +76,10 @@ suspend fun requestPAR(info: LoginInformation, scope: String, state: String, red
         if (info.loginHint != null) {
             set("login_hint", info.loginHint)
         }
-        addClientAssertion(info.authServer)
+        addClientAssertion(info.authServer.server)
     }
     val dPoPKeyPair = newDPoPKeyPair()
-    val response = httpClient.submitForm(info.authServer.pushedAuthorizationRequestEndpoint, body) {
+    val response = httpClient.submitForm(info.authServer.server.pushedAuthorizationRequestEndpoint, body) {
         signWithDPoP(dPoPKeyPair, null)
     }
     val dpopNonce = response.headers["DPoP-Nonce"]!!
@@ -96,9 +96,9 @@ suspend fun requestToken(authData: PARAuthData, code: String): PARToken {
         set("code_verifier", authData.pkceVerifier)
         set("code", code)
         set("redirect_uri", fullHref(BlueSkyRoute.CallbackRoute()))
-        addClientAssertion(authData.authorizationServer)
+        addClientAssertion(authData.authorizationServer.server)
     }
-    val response = httpClient.submitForm(authData.authorizationServer.tokenEndpoint, parameters) {
+    val response = httpClient.submitForm(authData.authorizationServer.server.tokenEndpoint, parameters) {
         signWithDPoP(authData.ecKey, null)
     }.body<PARToken>()
 

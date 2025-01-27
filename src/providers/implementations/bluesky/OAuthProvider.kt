@@ -35,7 +35,7 @@ data class DPoPKey(
     override val id: String,
     val key: SerializableECKey,
     val did: String,
-    val authorizationServer: OAuthAuthorizationServer,
+    val authorizationServer: AuthorizationServerInfo,
     val token: String
 ) : State
 
@@ -82,12 +82,12 @@ fun ProviderRegistry.bluesky() = registerProvider("bluesky") {
                 val kid = findAndRemoveState<DPoPKey>(parsed.subject) ?: throw BadRequestException("Invalid token")
 
                 request.url {
-                    takeFrom(kid.authorizationServer.issuer)
+                    takeFrom(kid.authorizationServer.resource)
                     path("xrpc", "app.bsky.actor.getProfile")
                     parameters.append("actor", kid.did)
                 }
                 request.headers[HttpHeaders.Authorization] = "DPoP ${kid.token}"
-                request.signWithDPoPAuthenticated(kid.key, null, kid.authorizationServer.issuer, kid.token)
+                request.signWithDPoPAuthenticated(kid.key, null, kid.authorizationServer.resource, kid.token)
             }
         }
 

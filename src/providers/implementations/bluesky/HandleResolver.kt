@@ -12,7 +12,7 @@ import kotlinx.coroutines.coroutineScope
 class InvalidHandleException(message: String? = null) : RuntimeException(message ?: "Could not validate handle")
 
 data class LoginInformation(
-    val authServer: OAuthAuthorizationServer,
+    val authServer: AuthorizationServerInfo,
     val did: String? = null,
     val loginHint: String? = null
 )

@@ -129,7 +129,7 @@ fun Route.blueskyRoute() {
         val par = requestPAR(loginInfo, scope, state, redirectUri)
         cache.put(par)
         call.respondRedirect {
-            takeFrom(loginInfo.authServer.authorizationEndpoint)
+            takeFrom(loginInfo.authServer.server.authorizationEndpoint)
             parameters["request_uri"] = par.requestUri
             parameters["client_id"] = blueSkyClientId
             parameters["state"] = state

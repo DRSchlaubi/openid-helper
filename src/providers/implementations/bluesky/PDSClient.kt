@@ -34,10 +34,16 @@ data class OAuthAuthorizationServer(
     val scopesSupported: List<String>
 )
 
-suspend fun resolveOAuthServer(pdsServer: String): OAuthAuthorizationServer {
+@Serializable
+data class AuthorizationServerInfo(
+    val resource: String,
+    val server: OAuthAuthorizationServer,
+)
+
+suspend fun resolveOAuthServer(pdsServer: String): AuthorizationServerInfo {
     val resource = resolveProtectedOAuthResource(pdsServer)
     val authServer = resource.authorizationServers.first()
-    return resolveAuthorizationServer(authServer)
+    return AuthorizationServerInfo(resource.resource, resolveAuthorizationServer(authServer))
 }
 
 private suspend fun resolveProtectedOAuthResource(domain: String) = httpClient.get(domain) {
