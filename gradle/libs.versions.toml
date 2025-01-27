@@ -3,10 +3,10 @@ ktor = "3.0.3"
 kord-cache = "0.5.6"
 kotlin = "2.1.0"
 coroutines = "1.10.1"
-bouncycastle = "1.79"
+bouncycastle = "1.80"
 
 [libraries]
-kotlinx-serialization-json-io = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json-io", version = "1.8.0-RC" }
+kotlinx-serialization-json-io = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json-io", version = "1.8.0" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor" }
 ktor-server-content-negotiation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
@@ -27,10 +27,10 @@ kotlinx-io = { group = "org.jetbrains.kotlinx", name = "kotlinx-io-core", versio
 
 java-jwt = { group = "com.auth0", name = "java-jwt", version = "4.4.0" }
 java-jwks = { group = "com.auth0", name = "jwks-rsa", version = "0.22.1" }
-nimbus-jwt = { group = "com.nimbusds", name = "nimbus-jose-jwt", version = "9.48" }
+nimbus-jwt = { group = "com.nimbusds", name = "nimbus-jose-jwt", version = "10.0.1" }
 bouncycastle-bcpkix-jdk18on = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
 
-doh = { group = "tech.relaycorp", name = "doh", version = "1.0.69" }
+doh = { group = "tech.relaycorp", name = "doh", version = "1.0.70" }
 
 kord-cache-api = { group = "dev.kord.cache", name = "cache-api", version.ref = "kord-cache" }
 kord-cache-map = { group = "dev.kord.cache", name = "cache-map", version.ref = "kord-cache" }
