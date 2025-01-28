@@ -9,13 +9,13 @@ import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.gen.ECKeyGenerator
 import dev.schlaubi.openid.helper.fullHref
 import dev.schlaubi.openid.helper.providers.implementations.generateCodeChallenge
-import dev.schlaubi.openid.helper.util.LoomDispatcher
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -66,8 +66,10 @@ fun HttpRequestBuilder.signWithDPoP(
             if ((httpResponse.status != HttpStatusCode.BadRequest && httpResponse.status != HttpStatusCode.Unauthorized) || dpopNonce == null) {
                 false
             } else {
-                val (error) = runBlocking(LoomDispatcher) { httpResponse.body<DPoPError>() }
-                error == "use_dpop_nonce"
+                val error = runBlocking {
+                    withTimeoutOrNull(100) { httpResponse.body<DPoPError>() }
+                }
+                error?.errorDescription == "use_dpop_nonce"
             }
         }
 
