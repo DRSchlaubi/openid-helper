@@ -20,6 +20,7 @@ import io.ktor.server.util.*
 import io.ktor.util.*
 import kotlinx.serialization.json.Json
 import tech.relaycorp.doh.DoHClient
+import kotlin.time.Duration.Companion.seconds
 
 val LOG = KotlinLogging.logger { }
 val PROXY_HEADERS =
@@ -39,6 +40,10 @@ val httpClient = HttpClient(OkHttp) {
 
     install(HttpRequestRetry) {
         maxRetries = 0
+    }
+
+    install(HttpTimeout) {
+        requestTimeoutMillis = 5.seconds.inWholeMilliseconds
     }
 }
 val dnsClient = DoHClient()
