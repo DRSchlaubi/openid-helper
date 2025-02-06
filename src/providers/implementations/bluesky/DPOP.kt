@@ -56,7 +56,7 @@ fun HttpRequestBuilder.signWithDPoP(
             }
         }
         .sign(Algorithm.ECDSA256(signingKey.toECPrivateKey()))
-    expectSuccess = true
+    expectSuccess = false
 
     retry {
         maxRetries = 1

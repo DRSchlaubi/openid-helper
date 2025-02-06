@@ -42,6 +42,8 @@ val httpClient = HttpClient(OkHttp) {
         maxRetries = 0
     }
 
+    expectSuccess = true
+
     install(HttpTimeout) {
         requestTimeoutMillis = 5.seconds.inWholeMilliseconds
     }
