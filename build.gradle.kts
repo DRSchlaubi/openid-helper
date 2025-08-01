@@ -8,6 +8,10 @@ repositories {
     mavenCentral()
 }
 
+application {
+    mainClass = "dev.schlaubi.openid.helper.MainKt"
+}
+
 dependencies {
     implementation(libs.kotlinx.io)
     implementation(libs.kotlinx.serialization.json.io)
