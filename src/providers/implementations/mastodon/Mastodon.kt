@@ -6,6 +6,7 @@ import dev.schlaubi.openid.helper.buildUrl
 import dev.schlaubi.openid.helper.providers.ProviderRegistry
 import dev.schlaubi.openid.helper.providers.registerProvider
 import dev.schlaubi.openid.helper.util.registerState
+import dev.schlaubi.openid.helper.util.validateClientSecret
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.auth.*
@@ -48,8 +49,9 @@ fun ProviderRegistry.mastodon() = registerProvider("mastodon") {
 
     token {
         request {
-            formBody { (parameters, _, response) ->
-                if (get("client_secret") != Config.MASTODON_CLIENT_SECRET) throw BadRequestException("Ooops")
+            formBody { context ->
+                val (parameters, _, response) = context
+                context.validateClientSecret(Config.MASTODON_CLIENT_ID, Config.MASTODON_CLIENT_SECRET)
                 response.url.takeFrom(verifyToken(parameters["code"]!!).url)
                 response.url.path("oauth", "token")
                 response.contentType(ContentType.Application.FormUrlEncoded)
