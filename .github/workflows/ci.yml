@@ -22,7 +22,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - run: ./amper build
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '22'
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew installDist
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v3
       - name: Log into registry ${{ env.REGISTRY }}
