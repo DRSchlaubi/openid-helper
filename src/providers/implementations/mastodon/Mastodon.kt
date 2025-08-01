@@ -55,6 +55,7 @@ fun ProviderRegistry.mastodon() = registerProvider("mastodon") {
                 response.url.takeFrom(verifyToken(parameters["code"]!!).url)
                 response.url.path("oauth", "token")
                 response.contentType(ContentType.Application.FormUrlEncoded)
+                ignoreHeader(HttpHeaders.Authorization)
 
                 val token = verifyToken(get("code")!!)
                 val instance = getClient(token.url) ?: throw BadRequestException("Invalid instance")

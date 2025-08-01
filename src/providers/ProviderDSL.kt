@@ -110,6 +110,13 @@ open class InterceptorBuilder {
     @PublishedApi
     internal var urlUpdater: URLUpdater = {}
 
+    @PublishedApi
+    internal val ignoreHeaders = mutableSetOf<String>()
+
+    fun ignoreHeader(header: String) {
+        ignoreHeaders.add(header)
+    }
+
     fun url(block: URLUpdater) {
         urlUpdater = block
     }
@@ -126,7 +133,7 @@ class RequestInterceptorBuilder : InterceptorBuilder() {
     ) {
         interceptor = Provider.JsonInterceptor({ data, call, request ->
             builder(RequestContext(data, call, request))
-        }, { _, _ -> }, urlUpdater)
+        }, { _, _ -> }, urlUpdater, ignoreHeaders)
     }
 
     fun formBody(
@@ -134,7 +141,7 @@ class RequestInterceptorBuilder : InterceptorBuilder() {
     ) {
         interceptor = Provider.FormInterceptor({ data, call, request ->
             builder(RequestContext(data, call, request))
-        }, { _, _ -> }, urlUpdater)
+        }, { _, _ -> }, urlUpdater, ignoreHeaders)
     }
 
     inline fun <reified T> plainText(
@@ -142,7 +149,7 @@ class RequestInterceptorBuilder : InterceptorBuilder() {
     ) {
         interceptor = Provider.TextInterceptor(typeInfo<T>(), { data, call, request ->
             builder(RequestContext(data, call, request))
-        }, { _, _ -> }, urlUpdater)
+        }, { _, _ -> }, urlUpdater, ignoreHeaders)
     }
 
     fun build() = interceptor.with(urlUpdater)
@@ -156,19 +163,19 @@ class RequestResponseBuilder : InterceptorBuilder() {
         builder: suspend JsonObjectBuilder.(ResponseContext<JsonObject>) -> Unit
     ) {
         interceptor = Provider.JsonInterceptor({ _, _, _ ->
-        }, { data, response -> builder(ResponseContext(data, response)) }, urlUpdater)
+        }, { data, response -> builder(ResponseContext(data, response)) }, urlUpdater, ignoreHeaders)
     }
 
     fun formBody(
         builder: ParametersBuilder.(ResponseContext<Parameters>) -> Unit
     ) {
         interceptor = Provider.FormInterceptor({ _, _, _ ->
-        }, { data, response -> builder(ResponseContext(data, response)) }, urlUpdater)
+        }, { data, response -> builder(ResponseContext(data, response)) }, urlUpdater, ignoreHeaders)
     }
 
     inline fun <reified T> plainText(noinline builder: suspend (ResponseContext<ByteReadChannel>) -> Any) {
         interceptor = Provider.TextInterceptor(typeInfo<T>(), { _, _, _ ->
-        }, { data, response -> builder(ResponseContext(data, response)) }, urlUpdater)
+        }, { data, response -> builder(ResponseContext(data, response)) }, urlUpdater, ignoreHeaders)
     }
 
     fun build() = interceptor.with(urlUpdater)

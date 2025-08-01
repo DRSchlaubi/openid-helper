@@ -93,7 +93,7 @@ inline fun <reified R : HasProvider> Route.proxyRoute(
             }) {
                 this.method = method
                 intercept(call, interceptor.request)
-                headers.appendAll(call.request.headers.filter { name, _ -> name !in PROXY_HEADERS && name !in headers })
+                headers.appendAll(call.request.headers.filter { name, _ -> name !in PROXY_HEADERS && name !in headers && name !in interceptor.request.ignoreHeaders })
             }
 
             LOG.info { "Forwarded request to ${response.request.url}, response: ${response.status}" }
