@@ -5,7 +5,7 @@ settings:
     serialization: json
 
   jvm:
-    release: 22
+    release: 21
 
 dependencies:
   - $libs.kotlinx.io
@@ -25,6 +25,8 @@ dependencies:
   - $libs.kotlin.logging
   - $libs.java.jwt
   - $libs.nimbus.jwt
+  - $libs.bouncycastle.bcprov.jdk18on
+  - $libs.bouncycastle.bcutil.jdk18on
   - $libs.bouncycastle.bcpkix.jdk18on
   - $libs.kord.cache.api
   - $libs.kord.cache.map

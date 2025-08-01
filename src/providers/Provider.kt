@@ -44,6 +44,7 @@ data class Provider(
 
     interface Interceptor<T> {
         val urlUpdater: URLUpdater
+        val ignoreHeaders: Set<String>
         val typeInfo: TypeInfo? get() = null
 
         suspend fun ApplicationCall.receiveBody(): T
@@ -61,6 +62,7 @@ data class Provider(
 
     open class NoopInterceptor(
         override val urlUpdater: URLUpdater = { },
+        override val ignoreHeaders: Set<String> = emptySet(),
     ) : Interceptor<ByteReadChannel> {
         override suspend fun ApplicationCall.receiveBody(): ByteReadChannel = receiveChannel()
         override suspend fun HttpResponse.receiveBody(): ByteReadChannel = bodyAsChannel()
@@ -71,7 +73,7 @@ data class Provider(
 
         override fun with(
             urlUpdater: URLUpdater,
-        ) = NoopInterceptor(urlUpdater = urlUpdater)
+        ) = NoopInterceptor(urlUpdater = urlUpdater, ignoreHeaders = ignoreHeaders)
 
         companion object : NoopInterceptor()
     }
@@ -81,6 +83,7 @@ data class Provider(
         private val requestBuilder: suspend (ByteReadChannel, ApplicationCall, HttpRequestBuilder) -> Any,
         private val responseBuilder: suspend (ByteReadChannel, HttpResponse) -> Any,
         override val urlUpdater: URLUpdater = { },
+        override val ignoreHeaders: Set<String>
     ) : Interceptor<ByteReadChannel> {
         override suspend fun ApplicationCall.receiveBody(): ByteReadChannel = receiveChannel()
         override suspend fun HttpResponse.receiveBody(): ByteReadChannel = bodyAsChannel()
@@ -102,6 +105,7 @@ data class Provider(
         private val requestBuilder: ParametersBuilder.(Parameters, ApplicationCall, HttpRequestBuilder) -> Unit,
         private val responseBuilder: ParametersBuilder.(Parameters, HttpResponse) -> Unit,
         override val urlUpdater: URLUpdater,
+        override val ignoreHeaders: Set<String>
     ) : Interceptor<Parameters> {
         override suspend fun ApplicationCall.receiveBody(): Parameters = receiveParameters()
         override suspend fun HttpResponse.receiveBody(): Parameters = body()
@@ -133,6 +137,7 @@ data class Provider(
         private val requestBuilder: suspend JsonObjectBuilder.(JsonObject, ApplicationCall, HttpRequestBuilder) -> Unit,
         private val responseBuilder: suspend JsonObjectBuilder.(JsonObject, HttpResponse) -> Unit,
         override val urlUpdater: URLUpdater,
+        override val ignoreHeaders: Set<String>
     ) : Interceptor<JsonObject> {
         override val typeInfo: TypeInfo = typeInfo<JsonObject>()
         override suspend fun ApplicationCall.receiveBody(): JsonObject = receive()

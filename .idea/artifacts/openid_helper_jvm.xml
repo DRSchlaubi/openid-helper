@@ -1,8 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="openid-helper-jvm">
     <output-path>$PROJECT_DIR$/build/libs</output-path>
-    <root id="archive" name="openid-helper-jvm.jar">
-      <element id="module-output" name="openid-helper.jvmMain" />
-    </root>
+    <root id="archive" name="openid-helper-jvm.jar" />
   </artifact>
 </component>
