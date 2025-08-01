@@ -4,6 +4,10 @@ plugins {
     application
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     implementation(libs.kotlinx.io)
     implementation(libs.kotlinx.serialization.json.io)
